@@ -19,7 +19,7 @@ This NYC monthly crime data mapping application is a stand-alone HTML5 app that 
 * Use ```gradle jettyStop``` to stop the server and reset the Geoclient URL
 	
 ###Building and Deploying to NYC DoITT GIS environments:###
-* The following proerties should be set in ```$GRADLE_USER_HOME/gradle.properties```
+* The following properties should be set in ```$GRADLE_USER_HOME/gradle.properties```
 	* __File location properties:__
 		* ```archive.dir``` - the location on the remote server to store the zipped application
 		* ```mobile.dir``` - the deployment directory for mobile friendly HTML5 apps 
