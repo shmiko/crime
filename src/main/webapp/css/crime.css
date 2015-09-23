@@ -1,0 +1,431 @@
+html, body {
+	overflow: hidden;
+}
+html, body, .ui-mobile .ui-page-active, #main {
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	margin: 0;
+	padding: 0;
+}
+html, body, div, span, a, input, input[data-type="search"], li, .leaflet-container, .ui-btn, .ui-page-theme-a .ui-btn, .ui-page-theme-a .ui-btn:visited, .ui-mobile label {
+	font-size: 14px;
+	font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+	text-shadow: none !important;
+	color: black;
+}
+.ui-page-theme-a .ui-btn.ui-btn-active, html .ui-bar-a .ui-btn.ui-btn-active, html .ui-body-a .ui-btn.ui-btn-active, html body .ui-group-theme-a .ui-btn.ui-btn-active, html head+body .ui-btn.ui-btn-a.ui-btn-active, .ui-page-theme-a .ui-checkbox-on:after, html .ui-bar-a .ui-checkbox-on:after, html .ui-body-a .ui-checkbox-on:after, html body .ui-group-theme-a .ui-checkbox-on:after, .ui-btn.ui-checkbox-on.ui-btn-a:after, .ui-page-theme-a .ui-flipswitch-active, html .ui-bar-a .ui-flipswitch-active, html .ui-body-a .ui-flipswitch-active, html body .ui-group-theme-a .ui-flipswitch-active, html body .ui-flipswitch.ui-bar-a.ui-flipswitch-active, .ui-page-theme-a .ui-slider-track .ui-btn-active, html .ui-bar-a .ui-slider-track .ui-btn-active, html .ui-body-a .ui-slider-track .ui-btn-active, html body .ui-group-theme-a .ui-slider-track .ui-btn-active, html body div.ui-slider-track.ui-body-a .ui-btn-active {
+	background-color: #f28523;
+}
+#main {
+	width: 100%;
+	height: 100%;
+}
+#map {
+	position: fixed;
+	width: calc(100% - 320px);
+	bottom: 0;
+	top: 45px;
+}
+span.noshow {
+	display: none;
+}
+.capitalize{
+	text-transform: capitalize;
+}
+
+span.srch-icon-precinct:after, span.srch-icon-correction:after {
+	background-image: url(../img/shield.png);
+	background-repeat: no-repeat;
+	background-size: 16px;
+}
+
+span.srch-icon-correction:after {
+	background-image: url(../img/key.png);
+}
+
+
+/* ========================== begin panel ======================== */
+
+div#panel {
+    position: fixed;
+    width: 314px;
+	top: 45px;
+	right: 0;
+	bottom: 0;	
+    z-index: 1000;
+	box-shadow: 5px 10px 20px 5px rgba(0,0,0,0.5);
+	background-color: white;
+    padding: 0 3px 15px 3px;
+    overflow-y: auto;
+}
+div#panel label {
+	font-weight: bold;
+}
+div#panel .ui-radio-on:after {
+    border-color: rgba(0,0,0,0.5);
+}
+div#map-type-input {
+	margin-top: 4px;
+}
+#chart-pane div.ui-collapsible-content {
+	padding: 5px;
+}
+#legend {
+	min-height: 200px;
+}
+
+/* =========================== end panel ========================= */
+
+
+/* ======================= begin first load ======================== */
+
+#first-load {
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	background-color: #E8E8E8;
+	z-index: 1000000;
+}
+#first-load td {
+	text-align: center;
+}
+#first-load img {
+	width: 220px;
+	height: 75px;
+}
+#first-load p {
+	font-size: 34px;
+	font-weight: bold;
+	color: black;
+	text-align: center;
+	margin-top: -14px;
+}
+
+/* ======================= end first load ======================== */
+
+
+/* ========================= begin banner ======================== */
+
+.banner {
+	background-color: black !important;
+	height: 44px;
+	width: 100%;
+	position: fixed;
+	top: 0;
+	left: 0;
+	z-index: 1000;
+	border-top: none;
+	overflow: hidden;
+}
+.logo {
+	height: 24px;
+	cursor: pointer;
+	position: absolute;
+	top: 10px;
+}
+.nypd {
+	left: 3px;
+}
+.nyc {
+	left: 28px;
+}
+.banner h1 {
+	white-space: nowrap;
+	text-overflow: ellipsis;
+	overflow: hidden;
+}
+.banner h1 {
+	color: white;
+	margin: -4px 0 0 0 !important;
+	cursor: pointer;
+	font-size: 24px !important;
+	font-weight: bold !important;
+	text-align: left !important;
+	position: absolute;
+	left: 105px;
+	top: -6px;
+	right: 3px;
+}
+#dir-page .banner h1 {
+	right: 135px;
+}
+#map-page .ui-content, #dir-page .ui-content {
+	overflow: hidden;
+	position: fixed;
+	top: 45px;
+	bottom: 0;
+	width: 100%;
+}
+#btn-toggle, #spinner {
+	display: none;
+	width: 44px;
+	height: 44px;
+	background-repeat: no-repeat;
+	background-position: center;
+	background-size: 30px 30px;
+	position: fixed;
+	top:  0;
+	right: 0;
+	cursor: pointer;
+}
+#btn-toggle {
+	cursor: pointer;
+}
+#btn-toggle.btn-map {
+	background-image: url(../img/map.svg);
+}
+#btn-toggle.btn-panel {
+	background-image: url(../img/panel.png);
+}
+#spinner {
+	background-image: url(../img/searching.gif);
+	background-color: black;
+}
+
+/* ========================== end banner ========================= */
+
+
+/* ========================= begin chart ========================= */
+
+#chart-all {
+	position: fixed;
+	bottom: 0;
+	width: 100%;
+	z-index: 1000;
+	background-color: white;
+	height: 320px;
+	overflow-x: auto;
+	box-shadow: 5px 10px 20px 5px rgba(0,0,0,0.9);
+}
+#chart-all-close {
+	position: fixed;
+	right: 0;
+	width: 22px;
+	height: 22px;
+	background-color: rgba(0,0,0,0.3);
+	border-radius: 22px;
+	background-image: url("data:image/svg+xml;charset=US-ASCII,%3C%3Fxml%20version%3D%221.0%22%20encoding%3D%22iso-8859-1%22%3F%3E%3C!DOCTYPE%20svg%20PUBLIC%20%22-%2F%2FW3C%2F%2FDTD%20SVG%201.1%2F%2FEN%22%20%22http%3A%2F%2Fwww.w3.org%2FGraphics%2FSVG%2F1.1%2FDTD%2Fsvg11.dtd%22%3E%3Csvg%20version%3D%221.1%22%20id%3D%22Layer_1%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20xmlns%3Axlink%3D%22http%3A%2F%2Fwww.w3.org%2F1999%2Fxlink%22%20x%3D%220px%22%20y%3D%220px%22%20%20width%3D%2214px%22%20height%3D%2214px%22%20viewBox%3D%220%200%2014%2014%22%20style%3D%22enable-background%3Anew%200%200%2014%2014%3B%22%20xml%3Aspace%3D%22preserve%22%3E%3Cpolygon%20style%3D%22fill%3A%23FFFFFF%3B%22%20points%3D%223.404%2C2.051%208.354%2C7%203.404%2C11.95%205.525%2C14.07%2012.596%2C7%205.525%2C-0.071%20%22%2F%3E%3C%2Fsvg%3E");
+	background-repeat: no-repeat;
+	background-position: center;
+	cursor: pointer;
+	margin: 5px;
+}
+#chart-all-close:hover {
+	background-color: rgba(0,0,0,0.5);
+}
+div.chart-title {
+	height: 55px;
+}
+#chart-pct canvas {
+	width: 300px;
+	height: 145px;
+}
+#chart-all canvas {
+	width: 3000px;
+	height: calc(100% - 85px);
+	margin: 70px 10px 10px;
+}
+#chart-all .chart-title {
+	position: fixed;
+	left: 10px;
+	bottom: 260px;
+}
+#chart-pct.chart-none div.chart-title, #chart-pct.chart-none canvas {
+	display: none;
+}
+#chart-pct div.chart-note {
+	display: none;
+}
+#chart-pct.chart-none div.chart-note {
+	display: block;
+	text-align: center;
+	height: 44px;
+	padding: 80px 20px;
+}
+
+/* ========================== end chart ========================== */
+
+
+/* ========================= begin alert ========================= */
+
+#alert {
+	position: relative;
+	margin: 100px auto;
+	width: 303px;
+	border-radius: 0.6em;
+	border: 1px solid lightgrey;
+	box-shadow: 5px 10px 20px 5px rgba(0,0,0,0.9);
+	display: none;
+	background-color: white;
+	padding: 5px;
+	z-index: 1000;
+	min-height: 74px;
+}
+#alert .alert-msg {
+	text-align: center;	
+	margin: 0 0 5px 0;
+}
+
+/* ========================== end alert ========================== */
+
+
+/* ======================= begin copyright ======================= */
+
+#copyright {
+	position: fixed;
+	right: 0;
+	bottom: 0;
+	background-color: rgba(255,255,255,0.5);
+	z-index: 1000;
+}
+#copyright {
+	font-size: 12px !important;
+	padding: 0 3px;
+}
+
+/* ======================== end copyright ======================== */
+
+
+/* ======================= begin downloads ======================= */
+
+.download-data, .download-code {
+	text-align: left;
+}
+.download-data:after, .download-code:after {
+	background-color: rgba(0,0,0,0.3);
+	color: white;
+	width: 22px;
+	height: 22px;
+	border-radius: 11px;
+	content: " ";
+	background-repeat: no-repeat;
+	background-position: center;
+}
+.download-data:after {
+	background-image: url(../img/data.png);
+	background-size: 26px;
+}
+.download-code:after {
+	background-image: url(../img/github.png);
+	background-size: 19px;
+}
+
+/* ======================== end downloads ======================== */
+
+
+/* ======================= begin overrides ======================= */
+
+.cartodb-tiles-loader {
+	opacity: 0 !important;	
+}
+div.cartodb-tooltip {
+	min-width: 1px;
+	max-width: none;
+	width: auto;
+	border-radius: 4px;
+	box-shadow: 5px 10px 20px 5px rgba(0,0,0,0.5);
+	height: auto;
+}
+div.cartodb-tooltip-content {
+	padding: 5px;
+}
+div.cartodb-tooltip-content div {
+	line-height: 16px;
+}
+div.leaflet-control-attribution {
+	display: none;
+}
+div.cartodb-popup-content {
+	max-height: 400px !important;	
+}
+div.cartodb-popup-content .crime-count {
+	width: 300px;
+	color: black;
+	font-weight: normal;
+}
+div.cartodb-popup-content .crime-count.crime-more {
+	cursor: pointer;
+	padding: 0 0 0 25px;
+	font-weight: bold;
+}
+.precinct div.cartodb-popup-content .crime-count:after {
+	top: 45px;
+}
+a.crime-count:hover:after {
+	background-color: rgba(0,0,0,0.5);
+}
+a.stat-note, a.stat-note:visited {
+	color: black;
+	font-weight: normal;
+}
+.location div.cartodb-popup-content .crime-count:after {
+	top: 23px;
+}
+div.cartodb-popup-content .crime-count-type {
+	display: none;
+	padding: 10px 0 0 25px;
+	border-top: 1px solid rgba(0,0,0,0.3);
+}
+.precinct div.cartodb-popup-content .crime-count-type {
+	border-bottom: 1px solid rgba(0,0,0,0.3);
+	padding-bottom: 10px;
+}
+div.cartodb-popup.v2 {
+    width: auto !important;
+    min-width: 250px;
+    max-width: 300px;
+    margin-right: 5px;
+}
+div.cartodb-popup.v2.precinct {
+    width: 300px !important;
+}
+a.cartodb-popup-close-button:before {
+	display: none;
+}
+div.cartodb-popup.v2 a.cartodb-popup-close-button, 
+div.cartodb-popup.v2 a.cartodb-popup-close-button:hover,
+div.cartodb-popup.v2 a.cartodb-popup-close-button:after {
+	width: 25px;
+	height: 25px;
+	border-radius: 20px;
+	box-shadow: none;
+	cursor: pointer;
+}
+div.cartodb-popup.v2 a.cartodb-popup-close-button:after {
+	transform: none;
+	margin: -9px 0 0 -6px;
+	background-color: rgba(0,0,0,0.3);
+	background-image: url("data:image/svg+xml;charset=US-ASCII,%3C%3Fxml%20version%3D%221.0%22%20encoding%3D%22iso-8859-1%22%3F%3E%3C!DOCTYPE%20svg%20PUBLIC%20%22-%2F%2FW3C%2F%2FDTD%20SVG%201.1%2F%2FEN%22%20%22http%3A%2F%2Fwww.w3.org%2FGraphics%2FSVG%2F1.1%2FDTD%2Fsvg11.dtd%22%3E%3Csvg%20version%3D%221.1%22%20id%3D%22Layer_1%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20xmlns%3Axlink%3D%22http%3A%2F%2Fwww.w3.org%2F1999%2Fxlink%22%20x%3D%220px%22%20y%3D%220px%22%20%20width%3D%2214px%22%20height%3D%2214px%22%20viewBox%3D%220%200%2014%2014%22%20style%3D%22enable-background%3Anew%200%200%2014%2014%3B%22%20xml%3Aspace%3D%22preserve%22%3E%3Cpolygon%20fill%3D%22%23FFF%22%20points%3D%2214%2C3%2011%2C0%207%2C4%203%2C0%200%2C3%204%2C7%200%2C11%203%2C14%207%2C10%2011%2C14%2014%2C11%2010%2C7%20%22%2F%3E%3Cg%3E%3C%2Fg%3E%3Cg%3E%3C%2Fg%3E%3Cg%3E%3C%2Fg%3E%3Cg%3E%3C%2Fg%3E%3Cg%3E%3C%2Fg%3E%3Cg%3E%3C%2Fg%3E%3Cg%3E%3C%2Fg%3E%3Cg%3E%3C%2Fg%3E%3Cg%3E%3C%2Fg%3E%3Cg%3E%3C%2Fg%3E%3Cg%3E%3C%2Fg%3E%3Cg%3E%3C%2Fg%3E%3Cg%3E%3C%2Fg%3E%3Cg%3E%3C%2Fg%3E%3Cg%3E%3C%2Fg%3E%3C%2Fsvg%3E");
+	background-position: center;
+	background-repeat: no-repeat;
+}
+div.cartodb-popup.v2 a.cartodb-popup-close-button:hover:after {
+	background-color: rgba(0,0,0,0.5);
+}
+
+/* ======================== end overrides ======================== */
+
+
+/* ===================== begin media queries ===================== */
+
+@media only screen and (max-width : 380px) {
+}
+@media only screen and (max-width : 495px), screen and (max-height: 350px) {
+	#btn-toggle {
+		display: block;
+	}
+	#map {
+		width: 100%;
+	}
+	div#panel {
+		width: calc(100% - 6px);
+		display: none;
+	}
+}
+
+/* ====================== end media queries ====================== */

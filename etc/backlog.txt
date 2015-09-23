@@ -1,0 +1,7 @@
+
+re-examine nyc.Locate.LocateResult structure
+
+define date picker options type
+
+nyc.EXTENT ???
+

@@ -1,0 +1,227 @@
+import org.apache.tools.ant.taskdefs.condition.Os
+
+plugins {
+    id 'base'
+    id 'jetty'
+    id 'org.hidetake.ssh' version '1.1.2'
+}
+
+ext{
+	default_env = 'local'
+	remoteDir = 'crime'
+	isWindows = Os.isFamily(Os.FAMILY_WINDOWS)
+	
+	orderedCssFiles = ['control-common.css', 'collapsible.css', 'zoomsearch.css', 'legend.css', 'chart.css', 'share.css', 'crime.css']
+
+	orderedJsFiles = ['nyc.js', 'collapsible.js', 'collapsible-month-range.js', 'collapsible-radio.js', 'locate.js', 'geocoder.js', 'legend.js', 'share.js', 'zoomsearch.js', 'carto/view.js', 'carto/chart.js', 'leaf/leaf.js', 'leaf/zoomsearch.js', 'leaf/locate.js', 'app.js']
+	
+	closureArgs = [
+		"build/tmp/js/init.js",
+		"--warning_level VERBOSE",
+		"--compilation_level WHITESPACE_ONLY",
+		//"--compilation_level SIMPLE_OPTIMIZATIONS",
+		"--charset utf8",
+		"--js_output_file build/webapp/js/nyc-min.js",
+		'--source_map_location_mapping "build/tmp/js/nyc/|nyc/"',
+		"--create_source_map build/webapp/js/nyc-min.js.map",
+		isWindows ? '--output_wrapper "%%output%%//# sourceMappingURL=nyc-min.js.map"' : '--output_wrapper "%output%//# sourceMappingURL=nyc-min.js.map"'
+	]
+	closureComiler = "etc/closure/compiler.jar"
+	comilerArgs = ''
+}
+
+task setEnv << {
+	if (!project.hasProperty('env')) project.ext.env = default_env
+    def cmd = "git rev-parse --short HEAD"
+    def proc = cmd.execute()
+	if (!project.hasProperty('revision')) project.ext.revision =  proc.text.trim()
+    println "\nbuilding from git revision ${revision}..."
+ 	println "building for ${project.ext.env} environment...\n"
+ 	
+ 	archive.archiveName = "crime-${revision}-${env}.zip"
+	archive.from {'build/webapp'}
+}
+
+task makeArgs << {
+	closureArgs.each{ arg ->
+		comilerArgs += (' ' + arg)
+	}
+	orderedJsFiles.each{arg ->
+		comilerArgs += (' build/tmp/js/nyc/' + arg)
+	}
+}
+
+task copyFiles(dependsOn: clean) << {
+	def build = new File('build/tmp')
+	build.mkdirs()
+	copy {
+		from 'src/main/webapp'
+		include 'index.html'
+		include 'img/**'
+		exclude 'img/Thumbs.db'
+		include 'css/**'
+		include 'js/**'
+		include 'js/proj4js/**'
+		into 'build/tmp' 
+	}
+}
+
+task replaceTokens(dependsOn: [setEnv, copyFiles]) << {
+	
+	def geoUrl = project.ext["crime.${env}.geoclient.url"]
+
+ 	println "GEOCLIENT_URL = \"${geoUrl}\""
+
+	println project.ext['crime.git.geoclient.url']
+	
+	println file('build/tmp/js/init.js').exists()
+	
+	ant.taskdef(name: 'replace', classname: 'org.apache.tools.ant.taskdefs.Replace')	
+	ant.replace(file: 'build/tmp/js/init.js', token: project.ext['crime.git.geoclient.url'], value: geoUrl)
+
+}
+
+task makeScriptAndExec(dependsOn: [replaceTokens, makeArgs]) << {
+	println "\nwriting script...\n\njava -jar ${closureComiler} ${comilerArgs}\n"
+	def scriptFileName = isWindows ? 'compile.bat' : 'compile.sh'
+	def scriptFilePath = isWindows ? scriptFileName : "build/tmp/${scriptFileName}"
+	def tmp = new File('./build/tmp')
+	def bld = new File('./build/webapp/js')
+	tmp.mkdirs()	
+	bld.mkdirs()	
+	def scriptFile = new File(scriptFilePath) //TODO make available as shell script too
+	scriptFile.text = "java -jar ${closureComiler} ${comilerArgs}"	
+	println "\nexecuting script...\n${scriptFileName}\n"
+    if (!isWindows){
+	    copy {
+		    from 'build/tmp'
+		    include scriptFileName
+		    into './' 
+			fileMode 0755
+		}
+	}
+	exec {commandLine = [(!isWindows ? './' : '') + scriptFileName]}
+}
+
+task minifyScript(dependsOn: makeScriptAndExec)
+
+task minifyCss(dependsOn: [setEnv, clean, copyFiles]) << {
+	if (env != 'dev'){
+		def cssOut = new File('build/tmp/css/nyc-min.css')
+		orderedCssFiles.each{ cssFile ->
+			def css = file("build/tmp/css/${cssFile}").getText('UTF-8')
+			css = css.replaceAll(/[\n\r]+\s*/, '')
+			css = css.replaceAll(/\s+/, ' ')
+			css = css.replaceAll(/\s?([:,;{}])\s?/, '$1')
+			css = css.replaceAll(/([\s:]0)(px|pt|%|em)/, '$1')
+			css = css.replaceAll(/\/\*[\d\D]*?\*\//, '')
+			cssOut.append(css)
+		}
+	}
+}
+
+task rewiteSrcs(dependsOn: [minifyScript, minifyCss]) << {
+	ant.taskdef(name: 'replace', classname: 'org.apache.tools.ant.taskdefs.Replace')	
+
+	ant.replace(file: 'build/tmp/index.html', token: '<script src="js/nyc/nyc.js"></script>', value: '')
+	ant.replace(file: 'build/tmp/index.html', token: '<script src="js/nyc/collapsible.js"></script>', value: '')
+	ant.replace(file: 'build/tmp/index.html', token: '<script src="js/nyc/collapsible-month-range.js"></script>', value: '')
+	ant.replace(file: 'build/tmp/index.html', token: '<script src="js/nyc/collapsible-radio.js"></script>', value: '')
+	ant.replace(file: 'build/tmp/index.html', token: '<script src="js/nyc/locate.js"></script>', value: '')
+	ant.replace(file: 'build/tmp/index.html', token: '<script src="js/nyc/geocoder.js"></script>', value: '')
+	ant.replace(file: 'build/tmp/index.html', token: '<script src="js/nyc/legend.js"></script>', value: '')
+	ant.replace(file: 'build/tmp/index.html', token: '<script src="js/nyc/share.js"></script>', value: '')
+	ant.replace(file: 'build/tmp/index.html', token: '<script src="js/nyc/zoomsearch.js"></script>', value: '')
+	ant.replace(file: 'build/tmp/index.html', token: '<script src="js/nyc/leaf/locate.js"></script>', value: '')
+	ant.replace(file: 'build/tmp/index.html', token: '<script src="js/nyc/leaf/zoomsearch.js"></script>', value: '')
+	ant.replace(file: 'build/tmp/index.html', token: '<script src="js/nyc/carto/view.js"></script>', value: '')
+	ant.replace(file: 'build/tmp/index.html', token: '<script src="js/nyc/carto/chart.js"></script>', value: '')
+	ant.replace(file: 'build/tmp/index.html', token: '<script src="js/nyc/app.js"></script>', value: '')
+	ant.replace(file: 'build/tmp/index.html', token: 'js/init.js', value: 'js/nyc-min.js')
+
+	if (env != 'dev'){
+		ant.replace(file: 'build/tmp/index.html', token: '<link rel="stylesheet" href="css/control-common.css">', value: '')
+		ant.replace(file: 'build/tmp/index.html', token: '<link rel="stylesheet" href="css/collapsible.css">', value: '')
+		ant.replace(file: 'build/tmp/index.html', token: '<link rel="stylesheet" href="css/zoomsearch.css">', value: '')
+		ant.replace(file: 'build/tmp/index.html', token: '<link rel="stylesheet" href="css/legend.css">', value: '')
+		ant.replace(file: 'build/tmp/index.html', token: '<link rel="stylesheet" href="css/chart.css">', value: '')
+		ant.replace(file: 'build/tmp/index.html', token: '<link rel="stylesheet" href="css/share.css">', value: '')
+		ant.replace(file: 'build/tmp/index.html', token: 'css/crime.css', value: 'css/nyc-min.css')
+	}
+}
+
+task buildApp(dependsOn: [rewiteSrcs]) << {
+	copy {
+		from 'build/tmp'
+		include 'index.html'
+		include env == 'dev' ? 'css/**' : 'css/nyc-min.css'
+		include 'img/**'
+		include 'js/**'
+		into 'build/webapp'
+	}
+	println "\nCleaning up...\n"
+	//delete 'build/tmp'
+	delete 'compile.bat'
+	delete 'compile.sh'
+}
+
+task archive(type: Zip, dependsOn: [buildApp]) {}
+
+remotes {
+	deployTarget {}
+}
+
+task deploy(dependsOn: [archive]) << {
+	def archiveDir = project.ext['archive.dir']
+	def mobileDir = project.ext['mobile.dir']
+	def deployDir = "${mobileDir}/${remoteDir}"
+	
+	remotes.deployTarget.host = project.ext["${env}.host"]
+    remotes.deployTarget.user = project.ext["${env}.user"]	
+    remotes.deployTarget.identity = file("${System.properties['user.home']}/.ssh/id_rsa")
+	
+	ssh.run {
+        session(remotes.deployTarget) {
+            put "build/distributions/${archive.archiveName}", archiveDir
+            execute "cp -R ${deployDir} ${deployDir}.bak"
+            execute "rm -rf ${deployDir}"
+            execute "unzip ${archiveDir}/${archive.archiveName} -d ${deployDir}"
+            execute "rm -rf ${deployDir}.bak"
+        }
+    }
+}
+
+[jettyRun]*.with {
+    webXml = file("etc/jetty/webdefault.xml")
+}
+
+jettyRun {
+	webAppSourceDirectory file('./')
+	contextPath ''
+	httpPort 8088
+	stopPort 8090
+	stopKey 'stopKey'
+	reload 'automatic'
+	scanIntervalSeconds 2
+}
+jettyRun.dependsOn setEnv
+jettyRun.doFirst { 
+    ant.taskdef(name: 'replace', classname: 'org.apache.tools.ant.taskdefs.Replace')	
+	ant.replace(file: 'src/main/webapp/js/init.js', token: project.ext['crime.git.geoclient.url'], value: project.ext["crime.${env}.geoclient.url"])
+	ant.replace(file: 'src/test/webapp/js/setup-teardown.js', token: project.ext['crime.git.geoclient.url'], value: project.ext["crime.${env}.geoclient.url"])
+}
+
+jettyStop {
+	stopPort 8090
+	stopKey 'stopKey'
+}
+jettyStop.dependsOn setEnv
+jettyStop.doFirst { 
+    ant.taskdef(name: 'replace', classname: 'org.apache.tools.ant.taskdefs.Replace')	
+	ant.replace(file: 'src/main/webapp/js/init.js', token: project.ext["crime.${env}.geoclient.url"], value: project.ext['crime.git.geoclient.url'])
+	ant.replace(file: 'src/test/webapp/js/setup-teardown.js', token: project.ext["crime.${env}.geoclient.url"], value: project.ext['crime.git.geoclient.url'])
+}
+
+task wrapper(type: Wrapper) {
+    gradleVersion '2.5'
+}

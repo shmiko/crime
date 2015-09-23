@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="apple-mobile-web-app-capable" content="yes">
+	<meta name="twitter:card" content="summary_large_image">
+	<meta prefix="og: http://ogp.me/ns#" property="og:title" content="NYC Crime Map">
+	<meta prefix="og: http://ogp.me/ns#" property="og:type" content="website">
+	<meta prefix="og: http://ogp.me/ns#" property="og:url" content="http://maps.nyc.gov/crime/">
+	<meta prefix="og: http://ogp.me/ns#" property="og:image" content="http://maps.nyc.gov/crime/img/li.png">
+	<meta prefix="og: http://ogp.me/ns#" property="og:image:type" content="image/png">
+	<meta prefix="og: http://ogp.me/ns#" property="og:image:width" content="280">
+	<meta prefix="og: http://ogp.me/ns#" property="og:image:height" content="136">
+	<meta prefix="og: http://ogp.me/ns#" property="og:image" content="http://maps.nyc.gov/crime/img/og.png">
+	<meta prefix="og: http://ogp.me/ns#" property="og:image:width" content="1200">
+	<meta prefix="og: http://ogp.me/ns#" property="og:image:height" content="626">
+	<meta prefix="og: http://ogp.me/ns#" property="og:description" content="View NYC crime statistics and locations">
+	<meta prefix="og: http://ogp.me/ns#" property="og:site_name" content="NYC.gov">	
+	<meta name="google-translate-customization" content="4707bd7f535893a0-45bca7b6a97e5a2d-g609df9381571b349-c"> 	
+ 	
+	<title>NYC Crime Map</title>
+
+	<link rel="stylesheet" href="//code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.css">
+	<link rel="stylesheet" href="http://libs.cartocdn.com/cartodb.js/v3/3.15/themes/css/cartodb.css">
+	<link rel="stylesheet" href="css/control-common.css">
+	<link rel="stylesheet" href="css/collapsible.css">
+	<link rel="stylesheet" href="css/zoomsearch.css">
+	<link rel="stylesheet" href="css/legend.css"> 
+	<link rel="stylesheet" href="css/chart.css"> 
+	<link rel="stylesheet" href="css/share.css"> 
+	<link rel="stylesheet" href="css/crime.css"> 
+
+	<link rel="apple-touch-icon" sizes="60x60" href="img/apple-touch-icon-60.png">
+	<link rel="apple-touch-icon" sizes="76x76" href="img/apple-touch-icon-76.png">
+	<link rel="apple-touch-icon" sizes="120x120" href="img/apple-touch-icon-120.png">
+	<link rel="apple-touch-icon" sizes="152x152" href="img/apple-touch-icon-152.png">
+
+	<script src="//code.jquery.com/jquery-1.11.3.min.js"></script>
+	<script src="//code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.js"></script>
+	<script src="//libs.cartocdn.com/cartodb.js/v3/3.15/cartodb.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/1.0.2/Chart.min.js"></script>
+	<script src="js/proj4/proj4.js"></script>
+
+</head>
+<body>
+	<table id="first-load">
+		<tbody><tr><td>
+			<img src="img/first-load.gif" alt="maps.nyc.gov"><p>maps.nyc.gov</p>
+		</td></tr></tbody>
+	</table>
+	<div id="map-page" data-role="page" data-title="NYC Crime Map">
+		<div class="banner" data-role="header">
+			<img class="logo nypd" src="img/nypd.png" onclick="document.location='./';" alt="NYC Crime Map" title="NYC Crime Map">
+			<img class="logo nyc" src="img/nyc.png" onclick="document.location='./';" alt="NYC Crime Map" title="NYC Crime Map">
+			<h1 class="notranslate" translate="no" onclick="document.location='./';" title="NYC Crime Map">
+				Crime Map
+			</h1>
+			<div id="btn-toggle" class="btn-panel"><a><span class="noshow">Map</span></a></div>
+			<div id="spinner"></div>
+		</div>
+		<div id="main" data-role="main" class="ui-content">
+			<div id="map"></div>
+			<div id="map-title"></div>
+			<div id="panel">
+				<div id="map-type-input"></div>
+				<div id="crime-type-input"></div>
+				<div id="date-range-input"></div>
+				<div data-role="collapsible" data-collapsed="false" data-collapsed-icon="carat-d" data-expanded-icon="carat-u">
+					<h3>Legend</h3>
+					<div id="legend"></div>
+				</div>		
+				<div id="chart-pane" data-role="collapsible" data-collapsed-icon="carat-d" data-expanded-icon="carat-u">
+					<h3>Chart</h3>
+					<div id="chart-pct" class="chart-none">
+						<div class="chart-title"></div>
+						<div class="chart-note">Search for a location to create the summary chart.</div>
+						<canvas></canvas>
+						<a class="ui-btn ui-icon-carat-l ui-btn-icon-left ui-corner-all" onclick="nyc.app.showPrecinctChart();">Compare All Precincts</a>
+					</div>
+				</div>		
+				<div data-role="collapsible" data-collapsed-icon="carat-d" data-expanded-icon="carat-u">
+					<h3>Download</h3>
+					<div>
+						<a class="ui-btn ui-btn-icon-left ui-corner-all download-data" href="about:blank">NYC OpenData - NYPD Precincts</a>
+						<a class="ui-btn ui-btn-icon-left ui-corner-all download-data" href="about:blank">NYC OpenData - Crime Locations</a>
+						<a class="ui-btn ui-btn-icon-left ui-corner-all download-code" href="about:blank">GitHub - Source Code</a>
+					</div>
+				</div>		
+			</div>
+			<div id="chart-all">
+				<a id="chart-all-close" onclick="nyc.app.hideAllChart();"><span class="noshow">close</span></a>
+				<div class="chart-title"></div>
+				<canvas></canvas>
+			</div>
+		</div>
+		<div id="alert">
+			<div class="alert-msg"></div>
+			<button title="OK" onclick="$('#alert').fadeOut();">OK</button>
+		</div>
+	</div>
+	<div id="copyright" class="notranslate" translate="no"></div>
+	<script src="js/nyc/nyc.js"></script>
+	<script src="js/nyc/collapsible.js"></script>
+	<script src="js/nyc/collapsible-month-range.js"></script>
+	<script src="js/nyc/collapsible-radio.js"></script>
+	<script src="js/nyc/locate.js"></script>
+	<script src="js/nyc/geocoder.js"></script>
+	<script src="js/nyc/legend.js"></script>
+	<script src="js/nyc/share.js"></script>
+	<script src="js/nyc/zoomsearch.js"></script>
+	<script src="js/nyc/carto/view.js"></script>
+	<script src="js/nyc/carto/chart.js"></script>
+	<script src="js/nyc/leaf/leaf.js"></script>
+	<script src="js/nyc/leaf/zoomsearch.js"></script>
+	<script src="js/nyc/leaf/locate.js"></script>
+	<script src="js/nyc/app.js"></script>
+	<script src="js/init.js"></script>
+	<script>
+		/* google analytics */
+	</script>	
+</body>
+</html>
