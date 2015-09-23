@@ -22,7 +22,6 @@ nyc.ReplaceTokens.prototype = {
 	 * @export
 	 * @method
 	 * @param {string} str
-	 * @param {string} name
 	 * @param {string} value
 	 * @return {string}
 	 */
