@@ -22,7 +22,7 @@ nyc.ReplaceTokens.prototype = {
 	 * @export
 	 * @method
 	 * @param {string} str
-	 * @param {string} value
+	 * @param {Object.<string, string>} values
 	 * @return {string}
 	 */
 	replace: function(str, values){
