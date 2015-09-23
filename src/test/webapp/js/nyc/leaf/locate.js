@@ -71,23 +71,22 @@ QUnit.test('proxyEvent', function(assert){
 });
 
 QUnit.test('locate', function(assert){
-	assert.expect(5);
-	var coordinates = [40.7033127, -73.979681];
-	var latLng = L.latLng([40.7033127, -73.979681]);
+	assert.expect(6);
+	var coordinates = nyc.leaf.CENTER;
 	
 	var test = function(data){
 		assert.deepEqual(data, {
-			coordinates: [coordinates[1], coordinates[0]],
+			coordinates: [nyc.leaf.CENTER.lng, nyc.leaf.CENTER.lat],
 			accuracy: 2000, 
 			type: nyc.Locate.LocateResultType.GEOLOCATION,
-			name: "40° 42' 12\" N 73° 58' 47\" W",
-			zip: false
+			name: "40° 42' 12\" N 73° 58' 47\" W"
 		});
+		assert.notOk();
 	};
 
 	var locate = new nyc.leaf.Locate(this.MOCK_MAP, this.MOCK_GEOCODER, nyc.leaf.EXTENT);
 	locate.one(nyc.Locate.LocateEventType.GEOLOCATION, test);
-	this.MOCK_MAP.trigger('locationfound', {latlng: latLng, accuracy: 2000});
+	this.MOCK_MAP.trigger('locationfound', {latlng: nyc.leaf.CENTER, accuracy: 2000});
 
 	locate = new nyc.leaf.Locate(this.MOCK_MAP, this.MOCK_GEOCODER, nyc.leaf.EXTENT);
 	assert.ok(locate.isGeolocateAllowed);

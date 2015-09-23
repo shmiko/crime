@@ -108,14 +108,12 @@ nyc.leaf.Locate.prototype = {
 	 * @param {Object} e
 	 */
 	geolocated: function(e) {
-		var bnds = this.extentLimit;
-	    if (L.latLngBounds(bnds[0], bnds[1]).contains(e.latlng)){
+	    if (this.extentLimit.contains(e.latlng)){
 			this.trigger(nyc.Locate.LocateEventType.GEOLOCATION, {
 				 name: this.dmsString(e.latlng),
 				 coordinates: [e.latlng.lng, e.latlng.lat],
 				 accuracy: e.accuracy,
-				 type: nyc.Locate.LocateResultType.GEOLOCATION,
-				 zip: false
+				 type: nyc.Locate.LocateResultType.GEOLOCATION
 			});
 	    }				
 	},
