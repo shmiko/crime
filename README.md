@@ -1,9 +1,8 @@
 # NYC Crime Map
-NYC monthly crime data mapping
 
 See [http://www.nyc.gov/html/nypd/html/crime_mapping/nyc_crime_map_introduction.shtml](http://www.nyc.gov/html/nypd/html/crime_mapping/nyc_crime_map_introduction.shtml) for details on NYPD crime data.
 
-This app is a stand-alone HTML5 app that can be dropped into the doc root of any web server.
+This NYC monthly crime data mapping application is a stand-alone HTML5 app that can be dropped into the doc root of any web server.
 
 ###Geocoding:###
 * To use ```nyc.Geoclient``` as the implementation of ```nyc.Geocoder``` you must first get your Geoclient App ID and App Key from the NYC Developer Portal [https://developer.cityofnewyork.us/api/geoclient-api](https://developer.cityofnewyork.us/api/geoclient-api)
