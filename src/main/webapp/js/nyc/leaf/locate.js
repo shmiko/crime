@@ -35,7 +35,8 @@ nyc.leaf.Locate = function(map, geocoder, extentLimit){
 		me.proxyEvent(nyc.Locate.LocateEventType.ERROR, data);
 	});
 	me.geocoder = geocoder;
-	map.on('locationfound locationerror', $.proxy(me.geolocated, me));
+	map.on('locationfound', $.proxy(me.geolocated, me));
+	map.on('locationerror', $.proxy(me.geoError, me));
 };
 	
 nyc.leaf.Locate.prototype = {
@@ -98,21 +99,25 @@ nyc.leaf.Locate.prototype = {
 	 * @method
 	 * @param {Object} e
 	 */
+	geoError: function(e) {
+		if (e.code == 1) this.isGeolocateAllowed = false;
+	},
+	/**
+	 * @private
+	 * @method
+	 * @param {Object} e
+	 */
 	geolocated: function(e) {
-		if (e.type == 'locationerror'){
-			if (e.code == 1) this.isGeolocateAllowed = false;
-		} else{
-			var bnds = this.extentLimit;
-		    if (L.latLngBounds(bnds[0], bnds[1]).contains(e.latlng)){
-				this.trigger(nyc.Locate.LocateEventType.GEOLOCATION, {
-					 name: this.dmsString(e.latlng),
-					 coordinates: [e.latlng.lng, e.latlng.lat],
-					 accuracy: e.accuracy,
-					 type: nyc.Locate.LocateResultType.GEOLOCATION,
-					 zip: false
-				});
-		    }				
-		}
+		var bnds = this.extentLimit;
+	    if (L.latLngBounds(bnds[0], bnds[1]).contains(e.latlng)){
+			this.trigger(nyc.Locate.LocateEventType.GEOLOCATION, {
+				 name: this.dmsString(e.latlng),
+				 coordinates: [e.latlng.lng, e.latlng.lat],
+				 accuracy: e.accuracy,
+				 type: nyc.Locate.LocateResultType.GEOLOCATION,
+				 zip: false
+			});
+	    }				
 	},
 	/** 
 	 * @private 
