@@ -42,7 +42,7 @@ nyc.ZoomSearch.prototype = {
 	 * @export
 	 * @method
 	 * @abstract
-	 * @return {JQuery|Element} 
+	 * @return {JQuery} 
 	 */
 	container: function(){},
 	/**
