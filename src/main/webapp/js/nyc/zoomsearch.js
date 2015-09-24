@@ -108,7 +108,7 @@ nyc.ZoomSearch.prototype = {
 			me.emptyList();
 			$.each(possibleResults, function(i, locateResult){
 				me.list.append(
-					me.listItem('addr', locateResult.name, locateResult.coordinates, locateResult.data)
+					me.listItem('addr', locateResult)
 				);
 			});
 			me.list.filterable('refresh');
@@ -120,24 +120,22 @@ nyc.ZoomSearch.prototype = {
 	 * @method
 	 * @param {string} typeName
 	 * @param {string} featureName
-	 * @param {Array<number>} coordinates
-	 * @param {Object} geoJsonGeometry
 	 * @param {nyc.Locate.LocateResult} data
 	 * @return {JQuery}
 	 */
-	listItem: function(typeName, featureName, coordinates, geoJsonGeometry, data){
+	listItem: function(typeName, data){
 		var li = $('<li></li>');
 		li.addClass('srch-type-' + typeName);
 		li.addClass('notranslate');
 		li.attr('translate', 'no');
-		li.html(featureName);
+		li.html(data.name);
 		li.data('location', {
-			 name: featureName,
-			 coordinates: coordinates,
-			 geoJsonGeometry: geoJsonGeometry,
-			 accuracy: 0,
+			 name: data.name,
+			 coordinates: data.coordinates,
+			 geoJsonGeometry: data.geoJsonGeometry,
+			 accuracy: data.accuracy,
 			 type: nyc.Locate.LocateResultType.GEOCODE,
-			 data: data
+			 data: data.data
 		});
 		li.click($.proxy(this.diambiguated, this));
 		return li;
@@ -221,7 +219,15 @@ nyc.ZoomSearch.prototype = {
 		li.click($.proxy(me.choices, me));
 		$.each(features, function(_, f){
 			$('#fld-srch-retention').append(
-				me.listItem(featureTypeName, f.properties.name, null, f.geometry, f.properties)
+				me.listItem(
+					featureTypeName,
+					{
+						name: f.properties.name, 
+						geoJsonGeometry: f.geometry, 
+						data: f.properties,
+						accuracy: nyc.Geocoder.Accuracy.HIGH
+					}
+				)
 			);
 		});
 	},

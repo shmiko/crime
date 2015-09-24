@@ -3,22 +3,29 @@ QUnit.module('nyc.leaf.ZoomSearch', {
 		setup(assert, this);
 		this.POSSIBLE_LOCATIONS = [{
 			type: nyc.Locate.LocateResultType.GEOCODE,
-			coordinates: [980691, 195953],
+			coordinates: [1, 2],
 			accuracy: nyc.Geocoder.Accuracy.HIGH,
-			name: '2 Broadway, Manhattan, NY 10004'			
+			name: '2 Broadway, Manhattan, NY 10004',
+			geoJsonGeometry: null,
+			data: 'data'
 		},
 		{
 			type: nyc.Locate.LocateResultType.GEOCODE,
-			coordinates: [1031280, 179178],
+			coordinates: [3, 4],
 			accuracy: nyc.Geocoder.Accuracy.HIGH,
-			name: '2 Broadway, Queens, NY 11414'			
+			name: '2 Broadway, Queens, NY 11414',
+			geoJsonGeometry: null,
+			data: 'data'			
 		},
 		{
 			type: nyc.Locate.LocateResultType.GEOCODE,
-			coordinates: [951503, 172667],
+			coordinates: [5, 6],
 			accuracy: nyc.Geocoder.Accuracy.MEDIUM,
-			name: '2 Broadway, Staten Is, NY 10310'			
+			name: '2 Broadway, Staten Is, NY 10310',
+			geoJsonGeometry: null,
+			data: 'data'			
 		}];
+		$('body').append('<div><div id="test-map"></div></div>');
 		this.MOCK_MAP = {
 			zoom: 0,
 			getZoom: function(){
@@ -28,13 +35,14 @@ QUnit.module('nyc.leaf.ZoomSearch', {
 				return this.zoom = z;
 			},
 			getContainer: function(){
-				return $('body');
+				return $('#test-map');
 			}
 		};
 	},
 	afterEach: function(assert){
 		teardown(assert, this);
 		delete this.POSSIBLE_LOCATIONS;
+		$('#test-map').parent().remove();
 	}
 });
 
@@ -148,17 +156,17 @@ QUnit.test('disambiguated', function(assert){
 	assert.equal(control.list.children().length, 3);
 
 	control.one(nyc.ZoomSearch.EventType.DISAMBIGUATED, function(data){
-		assert.equal(data, possible[0]);
+		assert.deepEqual(data, possible[0]);
 	}); 
 	$(control.list.children()[0]).trigger('click');
 	
 	control.one(nyc.ZoomSearch.EventType.DISAMBIGUATED, function(data){
-		assert.equal(data, possible[1]);
+		assert.deepEqual(data, possible[1]);
 	}); 
 	$(control.list.children()[1]).trigger('click');
 	
 	control.one(nyc.ZoomSearch.EventType.DISAMBIGUATED, function(data){
-		assert.equal(data, possible[2]);
+		assert.deepEqual(data, possible[2]);
 	}); 
 	$(control.list.children()[2]).trigger('click');
 });
