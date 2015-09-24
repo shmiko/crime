@@ -227,3 +227,70 @@ QUnit.test('searching', function(assert){
 	control.searching(false);
 	assert.notOk($('#fld-srch-container a.ui-input-clear').hasClass('searching'));
 });
+
+QUnit.test('listItem', function(assert){
+	assert.expect(6);
+
+	var control = new this.TEST_CONTROL();
+	var location = {
+		 name: 'test-name',
+		 coordinates: [1, 2],
+		 geoJsonGeometry: "geoJsonGeometry",
+		 accuracy: nyc.Geocoder.Accuracy.HIGH,
+		 type: nyc.Locate.LocateResultType.GEOCODE,
+		 data: "data"
+	};
+	var li = control.listItem('test', location);
+
+	control.on(nyc.ZoomSearch.EventType.DISAMBIGUATED, function(data){
+		assert.deepEqual(data, location);
+	});
+	li.trigger('click');
+	
+	assert.deepEqual(li.data('location'), location);
+	assert.equal(li.html(), location.name);
+	assert.ok(li.hasClass('srch-type-test'));
+	assert.ok(li.hasClass('notranslate'));
+	assert.equal(li.attr('translate'), 'no');
+});
+
+QUnit.test('searchType', function(assert){
+	assert.expect(3);
+	var done = assert.async();
+	
+	var control = new this.TEST_CONTROL(true);
+	control.flipIcon = function(){
+		assert.ok(true);
+	};
+	
+	control.list.show();
+	$('#mnu-srch-typ').hide();
+	
+	control.searchType()
+	
+	assert.equal(control.list.css('display'), 'none');
+	setTimeout(function(){
+		assert.equal($('#mnu-srch-typ').css('display'), 'block');
+		done();
+	}, 1000);
+});
+
+QUnit.test('flipIcon', function(assert){
+	assert.expect(6);
+	
+	var control = new this.TEST_CONTROL(true);
+	
+	assert.ok(control.typBtn.hasClass('ui-icon-carat-d'));
+	assert.notOk(control.typBtn.hasClass('ui-icon-carat-u'));
+	
+	control.flipIcon();
+	
+	assert.notOk(control.typBtn.hasClass('ui-icon-carat-d'));
+	assert.ok(control.typBtn.hasClass('ui-icon-carat-u'));
+
+	control.flipIcon();
+	
+	assert.ok(control.typBtn.hasClass('ui-icon-carat-d'));
+	assert.notOk(control.typBtn.hasClass('ui-icon-carat-u'));
+});
+
