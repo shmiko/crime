@@ -424,7 +424,7 @@ nyc.App.prototype = {
 	error: function(msg){
 		$('#alert .alert-msg').html(msg);
 		$('#alert').fadeIn();
-		$('#alert a').focus();
+		$('#alert button').focus();
 		this.controls.searching(false);
 	}
 }
