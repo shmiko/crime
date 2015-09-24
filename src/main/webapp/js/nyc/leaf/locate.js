@@ -152,4 +152,4 @@ nyc.inherits(nyc.leaf.Locate, nyc.EventHandling);
  * @const
  * @type {number}
  */
-nyc.leaf.Locate.ZOOM_LEVEL = 18;
+nyc.leaf.Locate.ZOOM_LEVEL = 16;
