@@ -294,3 +294,136 @@ QUnit.test('flipIcon', function(assert){
 	assert.notOk(control.typBtn.hasClass('ui-icon-carat-u'));
 });
 
+QUnit.test('choices (srch-type = addr)', function(assert){
+	assert.expect(15);
+	var done = assert.async();
+
+	var control = new this.TEST_CONTROL(true);
+	control.flipIcon = function(){
+		assert.ok(true);
+	};
+	control.emptyList = function(){
+		assert.ok(true);
+	};
+	control.isAddrSrch = false;
+	control.val('before');
+	$('#mnu-srch-typ').show();
+	control.input.attr('placeholder', 'placeholder');
+	
+	var liAddr = $('<li></li><li></li><li></li>').addClass('srch-type-addr');
+	var liOther = $('<li>1</li><li></li><li></li>').addClass('srch-type-other');
+	$('#fld-srch-retention').append(liAddr);
+	$('#fld-srch-retention').append(liOther);
+	
+	assert.notOk(control.isAddrSrch);
+	assert.ok(control.val());
+	assert.notOk(control.input.get(0).isSameNode(document.activeElement));
+	assert.notOk($('#fld-srch li.srch-type-addr').length);
+	assert.notOk($('#fld-srch li.srch-type-other').length);
+	
+	control.choices({target: liAddr.get(1)});
+	
+	assert.ok(control.isAddrSrch);
+	assert.notOk(control.val());
+	assert.ok(control.input.get(0) == document.activeElement);
+	assert.ok(control.input.get(0).isSameNode(document.activeElement));
+	
+	assert.equal(control.input.attr('placeholder'), 'Search for an address...');
+	
+	assert.equal($('#fld-srch li.srch-type-addr').length, 3);
+	assert.notOk($('#fld-srch li.srch-type-other').length);
+	
+	setTimeout(function(){
+		assert.equal($('#mnu-srch-typ').css('display'), 'none');
+		done();
+	}, 1000);
+});
+
+QUnit.test('choices (srch-type = other)', function(assert){
+	assert.expect(15);
+	var done = assert.async();
+
+	var control = new this.TEST_CONTROL(true);
+	control.flipIcon = function(){
+		assert.ok(true);
+	};
+	control.emptyList = function(){
+		assert.ok(true);
+	};
+	control.isAddrSrch = false;
+	control.val('before');
+	$('#mnu-srch-typ').show();
+	control.input.attr('placeholder', 'placeholder');
+	
+	var liAddr = $('<li></li><li></li><li></li>').addClass('srch-type-addr');
+	var liOther = $('<li>1</li><li></li><li></li>').addClass('srch-type-other').data('srch-type', 'other').data('placeholder', 'Search Other...');
+	$('#fld-srch-retention').append(liAddr);
+	$('#fld-srch-retention').append(liOther);
+	
+	assert.notOk(control.isAddrSrch);
+	assert.ok(control.val());
+	assert.notOk(control.input.get(0).isSameNode(document.activeElement));
+	assert.notOk($('#fld-srch li.srch-type-addr').length);
+	assert.notOk($('#fld-srch li.srch-type-other').length);
+	
+	control.choices({target: liOther.get(1)});
+	
+	assert.notOk(control.isAddrSrch);
+	assert.notOk(control.val());
+	assert.ok(control.input.get(0) == document.activeElement);
+	assert.ok(control.input.get(0).isSameNode(document.activeElement));
+	
+	assert.equal(control.input.attr('placeholder'), 'Search Other...');
+	
+	assert.equal($('#fld-srch li.srch-type-other').length, 3);
+	assert.notOk($('#fld-srch li.srch-type-addr').length);
+	
+	setTimeout(function(){
+		assert.equal($('#mnu-srch-typ').css('display'), 'none');
+		done();
+	}, 1000);
+});
+
+QUnit.test('emptyList', function(assert){
+	assert.expect(3);
+
+	var control = new this.TEST_CONTROL();
+	var liAddr = $('<li></li><li></li><li></li>').addClass('srch-type-addr');
+	$('#fld-srch').append(liAddr);
+	
+	assert.notOk($('#fld-srch-retention li.srch-type-addr').length);
+
+	control.emptyList();
+	
+	assert.notOk($('#fld-srch li.srch-type-addr').length);
+	assert.equal($('#fld-srch-retention li.srch-type-addr').length, 3);
+});
+
+QUnit.test('setFeatures', function(assert){
+	assert.expect(6);
+
+	var control = new this.TEST_CONTROL(true);
+	var features = [
+	 	{geometry:"geom0", properties: {name: "feature0"}},
+	 	{geometry:"geom0", properties: {name: "feature1"}},
+	 	{geometry:"geom0", properties: {name: "feature2"}}
+	];
+	
+	control.setFeatures(
+		'test',
+		'Test Feature Type',
+		'Search by Test Feature Type...',
+		features
+	);
+	$.each($('#fld-srch-retention li.srch-type-test'), function(i, li){
+		assert.equal($(li).html(), 'feature' + i);
+		assert.deepEqual($(li).data('location'), {
+			name: features[i].properties.name,
+			coordinates: undefined,
+			geoJsonGeometry: features[i].geometry, 
+			data: features[i].properties,
+			accuracy: nyc.Geocoder.Accuracy.HIGH,
+			type: nyc.Locate.LocateResultType.GEOCODE
+		});
+	});
+});
