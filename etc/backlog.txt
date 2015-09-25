@@ -5,3 +5,4 @@ define date picker options type
 
 nyc.EXTENT ???
 
+diff top for share buttons on large v mobile view 
