@@ -35,13 +35,7 @@ $(document).ready(function(){
 
 		var locationSql = 
 			"SELECT\n" +
-			"  (\n" +
-			"    'x' ||\n" +
-			"    SUBSTR(\n" +
-			"      MD5(\n" +
-			"        ST_X(a.the_geom_webmercator) || '@' || ST_Y(a.the_geom_webmercator)\n" +
-			"      ), 1, 8)\n" +
-			"  )::BIT(32)::BIGINT AS cartodb_id,\n" +
+			"  ROW_NUMBER() OVER() AS cartodb_id,\n" +
 			"  a.the_geom_webmercator,\n" +
 			"  a.crime_count,\n" +
 			" '${displayType}' AS type,\n" +
