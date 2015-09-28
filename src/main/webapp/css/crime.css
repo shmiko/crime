@@ -138,8 +138,6 @@ div#map-type-input {
 	white-space: nowrap;
 	text-overflow: ellipsis;
 	overflow: hidden;
-}
-.banner h1 {
 	color: white;
 	margin: -4px 0 0 0 !important;
 	cursor: pointer;
@@ -148,7 +146,7 @@ div#map-type-input {
 	text-align: left !important;
 	position: absolute;
 	left: 105px;
-	top: -6px;
+	top: 11px;
 	right: 3px;
 }
 #dir-page .banner h1 {
