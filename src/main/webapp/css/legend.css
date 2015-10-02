@@ -17,7 +17,7 @@ table.legend td.leg-bin-desc {
 table.legend.precinct img {
 	width: 20px;
 	height: 20px;
-	border: 2px solid black;
+	border: 2px solid rgba(0,0,0,0.5);
 }
 table.legend.precinct .leg-bin-0 img {
 	background-color: rgba(254, 240, 217, 0.5);
@@ -37,7 +37,7 @@ table.legend.precinct .leg-bin-4 img {
 /* location */
 table.legend.location img {
 	background-color: rgba(95,174,231,0.7);
-	border: 2px solid black;
+	border: 2px solid rgba(0,0,0,0.5);
 }
 table.legend.location .leg-bin-0 img {
 	border-radius: 10px;
@@ -77,11 +77,11 @@ table.legend.heat td.leg-bin{
 	width: 20px;
 	height: 20px;
 	padding: 0;
-	border-left: 2px solid black;
-	border-right: 2px solid black;
+	border-left: 2px solid rgba(0,0,0,0.5);
+	border-right: 2px solid rgba(0,0,0,0.5);
 }
 table.legend.heat .leg-bin-0 {
-	border-top: 2px solid black;
+	border-top: 2px solid rgba(0,0,0,0.5);
 	background-color: rgba(254,240,217,0.7);
 }
 table.legend.heat .leg-bin-1 {
@@ -94,7 +94,7 @@ table.legend.heat .leg-bin-3 {
 	background-color: rgba(227,74,51,0.7);
 }
 table.legend.heat .leg-bin-4 {
-	border-bottom: 2px solid black;
+	border-bottom: 2px solid rgba(0,0,0,0.5);
 	background-color: rgba(179,0,0,0.7);
 }
 
