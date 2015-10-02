@@ -100,9 +100,8 @@ nyc.MonthRangePicker.prototype = {
 	 * @param {number} year
 	 * @return {Object}
 	 */
-	lastOfMonth: function(month, year){
-		var date = new Date(year, month + 1, 0).getDate();  
-		return this.localeDate(year + '-' + this.pad(month + 1) + '-' + date);		
+	firstOfMonth: function(month, year){
+		return this.localeDate(year + '-' + this.pad(month + 1) + '-01');		
 	},
 	/** 
 	 * @private
@@ -111,8 +110,9 @@ nyc.MonthRangePicker.prototype = {
 	 * @param {number} year
 	 * @return {Object}
 	 */
-	firstOfMonth: function(month, year){
-		return this.localeDate(year + '-' + this.pad(month + 1) + '-01');		
+	lastOfMonth: function(month, year){
+		var date = new Date(year, month + 1, 0).getDate();  
+		return this.localeDate(year + '-' + this.pad(month + 1) + '-' + date);		
 	},
 	/** 
 	 * @private
@@ -140,7 +140,7 @@ nyc.MonthRangePicker.prototype = {
 	disableMax: function(){
 		var me = this, minDate = new Date(this.min.val());
 		$.each(me.maxDates, function(i, date){
-			$(me.max.children()[i])[date < minDate ? 'hide' : 'show']();
+			$(me.max.children().get(i))[date < minDate ? 'hide' : 'show']();
 		});
 		this.changed();
 	},
@@ -151,7 +151,7 @@ nyc.MonthRangePicker.prototype = {
 	disableMin: function(){
 		var me = this, maxDate = new Date(this.max.val());		
 		$.each(me.minDates, function(i, date){
-			$(me.min.children()[i])[date > maxDate ? 'hide' : 'show']();
+			$(me.min.children().get(i))[date > maxDate ? 'hide' : 'show']();
 		});
 		this.changed();
 	},

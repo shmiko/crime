@@ -10,7 +10,7 @@ window.nyc = window.nyc || {};
  * @classdesc A class to generate legend HTML
  * @constructor
  * @extends {nyc.ReplaceTokens}
- * @param {Object} options
+ * @param {string} legendTemplate
  */
 nyc.Legend = function(legendTemplate){
 	this.legendTemplate = legendTemplate;
@@ -44,14 +44,12 @@ nyc.inherits(nyc.Legend, nyc.ReplaceTokens);
  * @param {string} name
  * @param {nyc.BinLegend.SymbolType} symbolType
  * @param {nyc.BinLegend.BinType} binType
- * @param {Array<string|number>=} bins
  * 
  */
-nyc.BinLegend = function(name, symbolType, binType, bins){
+nyc.BinLegend = function(name, symbolType, binType){
 	this.name = name;
 	this.symbolType = symbolType;
 	this.binType = binType;
-	this.bins = bins;
 };
 
 nyc.BinLegend.prototype = {
@@ -79,7 +77,7 @@ nyc.BinLegend.prototype = {
 	 * @export
 	 * @method
 	 * @param {string} caption
-	 * @param {Array<string|number>} bins
+	 * @param {Array<string|string>} bins
 	 * @return {JQuery}
 	 */
 	html: function(caption, bins){
@@ -88,7 +86,7 @@ nyc.BinLegend.prototype = {
 		table.append(tbody);
 		table.addClass(this.symbolType);
 		table.addClass(this.binType);
-		table.addClass(this.name);
+		table.addClass(this.name.replace(/ /g, '-'));
 		$.each(bins, function(i, bin){
 			if (me.binType != nyc.BinLegend.BinType.VALUE){
 				tbody.append(me.rangeBin(i, bins[i - 1], bin));
