@@ -22,6 +22,7 @@ $(document).ready(function(){
 			{value: 'GRAND LARCENY', label: 'Grand Larceny'},
 			{value: 'GRAND LARCENY OF MOTOR VEHICLE', label: 'Grand Larceny of Motor Vehicle'},
 			{value: 'MURDER', label: 'Murder'},
+			{value: 'RAPE', label: 'Rape'},		
 			{value: 'ROBBERY', label: 'Robbery'}		
 		]
 	});	
@@ -166,12 +167,12 @@ $(document).ready(function(){
 				cartoSql,
 				'per1000',
 				'pct NOT IN (22, -99)',
-				'#stg_crime_precinct{polygon-opacity:0.5;line-color:#000;line-width:1.5;line-opacity:1;}#stg_crime_precinct[pct=22]{polygon-fill:transparent;polygon-pattern-file:url(http://com.cartodb.users-assets.production.s3.amazonaws.com/patterns/diagonal_1px_fast.png);}#stg_crime_precinct[pct=-99]{polygon-fill:transparent;polygon-pattern-file:url(http://com.cartodb.users-assets.production.s3.amazonaws.com/patterns/diagonal_1px_fast.png);}',
-				['#stg_crime_precinct[per1000<=${value}]{polygon-fill:#f7f7f7;}', 
-				'#stg_crime_precinct[per1000<=${value}]{polygon-fill:#cccccc;}',
-				'#stg_crime_precinct[per1000<=${value}]{polygon-fill:#969696;}',
-				'#stg_crime_precinct[per1000<=${value}]{polygon-fill:#636363;}',
-				'#stg_crime_precinct[per1000<=${value}]{polygon-fill:#252525;}']
+				'#stg_crime_precinct{polygon-opacity:0.6;line-color:#000;line-width:1.5;line-opacity:1;}#stg_crime_precinct[pct=22]{polygon-fill:transparent;polygon-pattern-file:url(http://com.cartodb.users-assets.production.s3.amazonaws.com/patterns/diagonal_1px_fast.png);}#stg_crime_precinct[pct=-99]{polygon-fill:transparent;polygon-pattern-file:url(http://com.cartodb.users-assets.production.s3.amazonaws.com/patterns/diagonal_1px_fast.png);}',
+				['#stg_crime_precinct[per1000<=${value}]{polygon-fill:rgb(254,240,217);}', 
+				'#stg_crime_precinct[per1000<=${value}]{polygon-fill:rgb(252,141,89);}',
+				'#stg_crime_precinct[per1000<=${value}]{polygon-fill:rgb(252,141,89);}',
+				'#stg_crime_precinct[per1000<=${value}]{polygon-fill:rgb(227,74,51);}',
+				'#stg_crime_precinct[per1000<=${value}]{polygon-fill:rgb(179,0,0);}']
 			);
 
 		
@@ -179,7 +180,7 @@ $(document).ready(function(){
 			cartoSql,
 			'crime_count',
 			null,
-			'#stg_crime_location{marker-fill-opacity:0.5;marker-line-color:#FFF;marker-line-width:2;marker-line-opacity:1;marker-placement:point;marker-type:ellipse;marker-fill:#000;marker-allow-overlap:true;}',
+			'#stg_crime_location{marker-fill-opacity:0.7;marker-line-color:#000;marker-line-width:2;marker-line-opacity:1;marker-placement:point;marker-type:ellipse;marker-fill:#5faee7;marker-allow-overlap:true;}',
 			['#stg_crime_location[crime_count<=${value}]{marker-width:10;}', 
 			'#stg_crime_location[crime_count<=${value}]{marker-width:20;}',
 			'#stg_crime_location[crime_count<=${value}]{marker-width:30;}',

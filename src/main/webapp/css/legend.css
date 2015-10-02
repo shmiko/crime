@@ -20,24 +20,24 @@ table.legend.precinct img {
 	border: 2px solid black;
 }
 table.legend.precinct .leg-bin-0 img {
-	background-color: rgba(247,247,247,0.5);
+	background-color: rgba(254, 240, 217, 0.5);
 }
 table.legend.precinct .leg-bin-1 img {
-	background-color: rgba(204,204,204,0.5);
+	background-color: rgba(252, 141, 89, 0.5);
 }
 table.legend.precinct .leg-bin-2 img {
-	background-color: rgba(150,150,150,0.5);
+	background-color: rgba(252, 141, 89, 0.5);
 }
 table.legend.precinct .leg-bin-3 img {
-	background-color: rgba(99,99,99,0.5);
+	background-color: rgba(227, 74, 51, 0.5);
 }
 table.legend.precinct .leg-bin-4 img {
-	background-color: rgba(37,37,37,0.5);
+	background-color: rgba(179, 0, 0, 0.5);
 }
 /* location */
 table.legend.location img {
-	background-color: rgba(0,0,0,0.5);
-	border: 2px solid white;
+	background-color: rgba(95,174,231,0.7);
+	border: 2px solid black;
 }
 table.legend.location .leg-bin-0 img {
 	border-radius: 10px;
@@ -82,19 +82,19 @@ table.legend.heat td.leg-bin{
 }
 table.legend.heat .leg-bin-0 {
 	border-top: 2px solid black;
-	background-color: rgba(247,247,247,0.5);
+	background-color: rgba(254,240,217,0.7);
 }
 table.legend.heat .leg-bin-1 {
-	background-color: rgba(204,204,204,0.5);
+	background-color: rgba(253,204,138,0.7);
 }
 table.legend.heat .leg-bin-2 {
-	background-color: rgba(150,150,150,0.5);
+	background-color: rgba(252,141,89,0.7);
 }
 table.legend.heat .leg-bin-3 {
-	background-color: rgba(99,99,99,0.5);
+	background-color: rgba(227,74,51,0.7);
 }
 table.legend.heat .leg-bin-4 {
 	border-bottom: 2px solid black;
-	background-color: rgba(37,37,37,0.5);
+	background-color: rgba(179,0,0,0.7);
 }
 

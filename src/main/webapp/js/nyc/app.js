@@ -102,6 +102,7 @@ nyc.App.prototype = {
 		'GRAND LARCENY': 'Grand Larcenies',
 		'GRAND LARCENY OF MOTOR VEHICLE': 'Grand Larcenies of Motor Vehicles',
 		MURDER: 'Murders',
+		RAPE: 'Rapes',
 		ROBBERY: 'Robberies'
 	},
 	/** 
@@ -371,8 +372,10 @@ nyc.App.prototype = {
 	 * @method
 	 */
 	updateView: function(){
-		$('#spinner').show();
 		var filters = this.filters();
+		$('#spinner').show();
+		$('#ui-id-10').prop('disabled', this.mapType.val() != 'precinct').checkboxradio('refresh');
+		$('#ui-id-2, #ui-id-3').prop('disabled', this.crimeType.val() == 'RAPE').checkboxradio('refresh');
 		this.viewSwitcher.switchView(this.mapType.val(), filters.filterValues, filters.descriptionValues);
 		this.updatePrecinctChart();		
 		this.updateSummaryChart();
