@@ -162,68 +162,66 @@ $(document).ready(function(){
 
 		var cartoLayer = vis.getLayers()[1];
 		var locationLayer = cartoLayer.getSubLayer(1);
-		
-		var precinctSym = new nyc.carto.JenksSymbolizer(
-				cartoSql,
-				'per1000',
-				'pct NOT IN (22, -99)',
-				'#stg_crime_precinct{polygon-opacity:0.6;line-color:#000;line-width:1.5;line-opacity:0.5;}#stg_crime_precinct[pct=22]{polygon-fill:black;polygon-opacity:0.2;}#stg_crime_precinct[pct=-99]{polygon-fill:black;polygon-opacity:0.2;}',
-				['#stg_crime_precinct[per1000<=${value}][pct!=22][pct!=-99]{polygon-fill:rgb(254,240,217);}', 
+				
+		var precinctSym = new nyc.carto.JenksSymbolizer({
+			cartoSql: cartoSql,
+			jenksColumn: 'per1000',
+			outlierFilter: 'pct NOT IN (22, -99)',
+			baseCss: '#stg_crime_precinct{polygon-opacity:0.6;line-color:#000;line-width:1.5;line-opacity:0.5;}#stg_crime_precinct[pct=22]{polygon-fill:black;polygon-opacity:0.2;}#stg_crime_precinct[pct=-99]{polygon-fill:black;polygon-opacity:0.2;}',
+			cssRules: ['#stg_crime_precinct[per1000<=${value}][pct!=22][pct!=-99]{polygon-fill:rgb(254,240,217);}', 
 				'#stg_crime_precinct[per1000<=${value}][pct!=22][pct!=-99]{polygon-fill:rgb(252,141,89);}',
 				'#stg_crime_precinct[per1000<=${value}][pct!=22][pct!=-99]{polygon-fill:rgb(252,141,89);}',
 				'#stg_crime_precinct[per1000<=${value}][pct!=22][pct!=-99]{polygon-fill:rgb(227,74,51);}',
 				'#stg_crime_precinct[per1000<=${value}][pct!=22][pct!=-99]{polygon-fill:rgb(179,0,0);}']
-			);
+		});
 
 		
-		var locationSym = new nyc.carto.JenksSymbolizer(
-			cartoSql,
-			'crime_count',
-			null,
-			'#stg_crime_location{marker-fill-opacity:0.7;marker-line-color:#000;marker-line-width:2;marker-line-opacity:0.5;marker-placement:point;marker-type:ellipse;marker-fill:#5faee7;marker-allow-overlap:true;}',
-			['#stg_crime_location[crime_count<=${value}]{marker-width:10;}', 
-			'#stg_crime_location[crime_count<=${value}]{marker-width:20;}',
-			'#stg_crime_location[crime_count<=${value}]{marker-width:30;}',
-			'#stg_crime_location[crime_count<=${value}]{marker-width:40;}',
-			'#stg_crime_location[crime_count<=${value}]{marker-width:50;}']
-		);
+		var locationSym = new nyc.carto.JenksSymbolizer({
+			cartoSql: cartoSql,
+			jenksColumn: 'crime_count',
+			baseCss: '#stg_crime_location{marker-fill-opacity:0.7;marker-line-color:#000;marker-line-width:2;marker-line-opacity:0.5;marker-placement:point;marker-type:ellipse;marker-fill:#5faee7;marker-allow-overlap:true;}',
+			cssRules: ['#stg_crime_location[crime_count<=${value}]{marker-width:10;}', 
+				'#stg_crime_location[crime_count<=${value}]{marker-width:20;}',
+				'#stg_crime_location[crime_count<=${value}]{marker-width:30;}',
+				'#stg_crime_location[crime_count<=${value}]{marker-width:40;}',
+				'#stg_crime_location[crime_count<=${value}]{marker-width:50;}']
+		});
 		
 		var viewSwitcher = new nyc.carto.ViewSwitcher([
-			new nyc.carto.View(
-				'precinct',
-				cartoLayer.getSubLayer(0),
-				precinctSql,
-				'<b>${displayType} per 1000 Residents by Precinct<br>${displayDates}</b>',
-				filters,
-				precinctSym,
-				new nyc.BinLegend(
+			new nyc.carto.View({
+				name: 'precinct',
+				layer: cartoLayer.getSubLayer(0),
+				sqlTemplate: precinctSql,
+				descriptionTemplate: '<b>${displayType} per 1000 Residents by Precinct<br>${displayDates}</b>',
+				filters: filters,
+				symbolizer: precinctSym,
+				legend: new nyc.BinLegend(
 					'precinct',
 					nyc.BinLegend.SymbolType.POLYGON,
 					nyc.BinLegend.BinType.RANGE_FLOAT
 				)
-			),
-			new nyc.carto.View(
-				'location',
-				locationLayer,
-				locationSql,
-				'<b>${displayType} per Location<br>${displayDates}</b>',
-				filters,
-				locationSym,
-				new nyc.BinLegend(
+			}),
+			new nyc.carto.View({
+				name: 'location',
+				layer: locationLayer,
+				sqlTemplate: locationSql,
+				descriptionTemplate: '<b>${displayType} per Location<br>${displayDates}</b>',
+				filters: filters,
+				symbolizer: locationSym,
+				legend: new nyc.BinLegend(
 					'location',
 					nyc.BinLegend.SymbolType.POLYGON,
 					nyc.BinLegend.BinType.RANGE_INT
 				)
-			),
-			new nyc.carto.View(
-				'heat',
-				vis.getLayers()[2],
-				'SELECT * FROM stg_crime_location WHERE ${where}',
-				'<b>Concentration of ${displayType}<br>${displayDates}</b>',
-				filters,
-				null,
-				new nyc.Legend('<table class="legend heat"><caption>${caption}</caption><tbody><tr><td class="leg-bin leg-bin-0"</td><td class="leg-bin-desc">Lowest Concentration</td></tr><tr><td class="leg-bin leg-bin-1"</td><td class="leg-bin-desc"></td></tr><tr><td class="leg-bin leg-bin-2"></td><td class="leg-bin-desc"></td></tr><tr><td class="leg-bin leg-bin-3"></td><td class="leg-bin-desc"></td></tr><tr><td class="leg-bin leg-bin-4"></td><td class="leg-bin-desc">Highest Concentration</td></tr></tbody></table>')	
-			)
+			}),
+			new nyc.carto.View({
+				name: 'heat',
+				layer: vis.getLayers()[2],
+				sqlTemplate: 'SELECT * FROM stg_crime_location WHERE ${where}',
+				descriptionTemplate: '<b>Concentration of ${displayType}<br>${displayDates}</b>',
+				filters: filters,
+				legend: new nyc.Legend('<table class="legend heat"><caption>${caption}</caption><tbody><tr><td class="leg-bin leg-bin-0"</td><td class="leg-bin-desc">Lowest Concentration</td></tr><tr><td class="leg-bin leg-bin-1"</td><td class="leg-bin-desc"></td></tr><tr><td class="leg-bin leg-bin-2"></td><td class="leg-bin-desc"></td></tr><tr><td class="leg-bin leg-bin-3"></td><td class="leg-bin-desc"></td></tr><tr><td class="leg-bin leg-bin-4"></td><td class="leg-bin-desc">Highest Concentration</td></tr></tbody></table>')	
+			})
 		]);
 
 		function labelLookup(lbl){
@@ -242,12 +240,28 @@ $(document).ready(function(){
 			}
 			return label;
 		};
-		
+						
 		var chartDescription = '<div>${displayType} per 1000 Residents</div>';
-		
-		var precinctChart = new nyc.carto.Chart(cartoSql, precinctChartSql, chartDescription, 'per1000', 'pct', filters, labelLookup);
+			
+		var precinctChart = new nyc.carto.Chart({
+			cartoSql: cartoSql, 
+			sqlTemplate: precinctChartSql,
+			descriptionTemplate: chartDescription,
+			dataColumn: 'per1000',
+			labelColumn: 'pct',
+			filters: filters, 
+			labelLookupFunction: labelLookup
+		});
 
-		var summaryChart = new nyc.carto.Chart(cartoSql, summaryChartSql, chartDescription, 'per1000', 'label', filters, labelLookup);
+		var summaryChart = new nyc.carto.Chart({
+			cartoSql: cartoSql,
+			sqlTemplate: summaryChartSql,
+			descriptionTemplate: chartDescription,
+			dataColumn: 'per1000',
+			labelColumn: 'label', 
+			filters: filters, 
+			labelLookupFunction: labelLookup
+		});
 
 		var controls = new nyc.leaf.ZoomSearch(vis.getNativeMap(), true);
 		new cartodb.SQL({user: 'timkeane', format: "geoJSON"}).execute('SELECT the_geom, name, pct, boro FROM stg_crime_precinct WHERE pct != -99 ORDER BY pct').done(
@@ -302,7 +316,6 @@ $(document).ready(function(){
 					{
 						type: "type = '${type}'",
 						mo: "mo BETWEEN ${start} AND ${end}",
-						pct: "pct = ${pct}",
 						location: "the_geom_webmercator = ST_SETSRID(ST_MAKEPOINT(${x}, ${y}), 3857)"
 					}
 				)

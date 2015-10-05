@@ -10,25 +10,37 @@ window.nyc = window.nyc || {};
 nyc.carto = nyc.carto || {};
 
 /**
+ * Object type to hold constructor options for nyc.carto.Chart
+ * @export
+ * @typedef {Object}
+ * @property {cartodb.SQL} cartoSql
+ * @property {string} sqlTemplate
+ * @property {string} descriptionTemplate
+ * @property {string} dataColumn 
+ * @property {string} labelColumn 
+ * @property {Object} filters 
+ * @property {function(string):string=} labelLookupFunction 
+ */
+nyc.carto.ChartOptions;
+
+/**
  * @export
  * @class
  * @classdesc Class for charting views on layers 
  * @constructor
  * @extends {nyc.carto.SqlTemplate}
  * @mixes {nyc.EventHandling}
- * @param {cartodb.SQL} cartoSql
- * @param {string} dataColumn
- * @param {string} labelColumn
+ * @param {nyc.carto.ChartOptions} options
  * 
  */
-nyc.carto.Chart = function(cartoSql, sqlTemplate, descriptionTemplate, dataColumn, labelColumn, filters, labelLookupFunction){
-	this.cartoSql = cartoSql;
-	this.sqlTemplate = sqlTemplate;
-	this.descriptionTemplate = descriptionTemplate;
-	this.dataColumn = dataColumn;
-	this.labelColumn = labelColumn;
-	this.filters = filters;
-	this.labelLookupFunction = labelLookupFunction || function(lbl){return lbl;};
+nyc.carto.Chart = function(options){
+	this.cartoSql = options.cartoSql;
+	this.sqlTemplate = options.sqlTemplate;
+	this.descriptionTemplate = options.descriptionTemplate;
+	this.dataColumn = options.dataColumn;
+	this.labelColumn = options.labelColumn;
+	this.filters = options.filters;
+	this.labelLookupFunction = options.labelLookupFunction || function(lbl){return lbl;};
 };
 
 nyc.carto.Chart.prototype = {

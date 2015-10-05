@@ -46,25 +46,33 @@ nyc.carto.SqlTemplate.prototype = {
 nyc.inherits(nyc.carto.SqlTemplate, nyc.ReplaceTokens);
 
 /**
+ * Object type to hold constructor options for nyc.carto.JenksSymbolizer
+ * @export
+ * @typedef {Object}
+ * @property {cartodb.SQL} cartoSql
+ * @property {string} jenksColumn
+ * @property {string} baseCss
+ * @property {Array<string>} cssRules 
+ * @property {string=} outlierFilter
+ */
+nyc.carto.JenksSymbolizerOptions;
+
+/**
  * @export
  * @class
  * @classdesc Class for managing SQL views on layers 
  * @constructor
  * @extends {nyc.carto.SqlTemplate}
  * @mixes {nyc.EventHandling}
- * @param {cartodb.SQL} cartoSql
- * @param {string} jenksColumn
- * @param {string} outlierFilter
- * @param {string} baseCss
- * @param {Array<string>} cssRules 
+ * @param {nyc.carto.JenksSymbolizerOptions} options
  */
-nyc.carto.JenksSymbolizer = function(cartoSql, jenksColumn, outlierFilter, baseCss, cssRules){
-	this.cartoSql = cartoSql;
-	this.baseCss = baseCss;
-	this.cssRules = cssRules;
-	this.jenksSql = this.replace(this.jenksSql, {column: jenksColumn, binCount: cssRules.length});
-	if (outlierFilter){
-		this.jenksSql += (' AND ' + outlierFilter);
+nyc.carto.JenksSymbolizer = function(options){
+	this.cartoSql = options.cartoSql;
+	this.baseCss = options.baseCss;
+	this.cssRules = options.cssRules;
+	this.jenksSql = this.replace(this.jenksSql, {column: options.jenksColumn, binCount: options.cssRules.length});
+	if (options.outlierFilter){
+		this.jenksSql += (' AND ' + options.outlierFilter);
 	}
 };
 
@@ -144,6 +152,20 @@ nyc.inherits(nyc.carto.JenksSymbolizer, nyc.EventHandling);
 nyc.inherits(nyc.carto.JenksSymbolizer, nyc.carto.SqlTemplate);
 
 /**
+ * Object type to hold constructor options for nyc.carto.View
+ * @export
+ * @typedef {Object}
+ * @property {string} name
+ * @property {cartodb.Layer} layer
+ * @property {string} sqlTemplate
+ * @property {string} descriptionTemplate
+ * @property {Object} filters
+ * @property {nyc.carto.JenksSymbolizer} symbolizer
+ * @property {string} legendTemplate
+ */
+nyc.carto.ViewOptions;
+
+/**
  * @export
  * @class
  * @classdesc Class for managing SQL views on layers 
@@ -153,20 +175,20 @@ nyc.inherits(nyc.carto.JenksSymbolizer, nyc.carto.SqlTemplate);
  * @param {string} name
  * @param {cartodb.Layer} layer
  * @param {string} sqlTemplate
- * @param {string} descriptionTemplate
  * @param {Object} filters
- * @param {nyc.carto.JenksSymbolizer} symbolizer
- * @param {string} legendTemplate
+ * @param {nyc.Legend} legend
+ * @param {string=} descriptionTemplate
+ * @param {nyc.carto.JenksSymbolizer=} symbolizer
  */
-nyc.carto.View = function(name, layer, sqlTemplate, descriptionTemplate, filters, symbolizer, legend){
+nyc.carto.View = function(options){
 	var me = this;
-	me.name = name;
-	me.layer = layer;
-	me.sqlTemplate = sqlTemplate;
-	me.filters = filters;
-	me.symbolizer = symbolizer;
-	me.descriptionTemplate = descriptionTemplate || '';
-	me.legend = legend;
+	me.name = options.name;
+	me.layer = options.layer;
+	me.sqlTemplate = options.sqlTemplate;
+	me.filters = options.filters;
+	me.symbolizer = options.symbolizer;
+	me.descriptionTemplate = options.descriptionTemplate || '';
+	me.legend = options.legend;
 };
 
 nyc.carto.View.prototype = {
@@ -212,10 +234,10 @@ nyc.carto.View.prototype = {
 			desc = me.replace(me.descriptionTemplate, descriptionValues);
 		me.layer.setSQL(sql);
 		if (me.symbolizer){
-			me.symbolizer.symbolize(me.layer);
 			me.symbolizer.one('symbolized', function(bins){
 				me.trigger('updated', me.legend.html(desc, bins));
 			});
+			me.symbolizer.symbolize(me.layer);
 		}else{
 			me.trigger('updated', me.legend.html(desc));
 		}
