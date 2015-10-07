@@ -167,9 +167,8 @@ nyc.App.prototype = {
 	 * @param {Object} e
 	 */
 	toggle: function(e){
-		var btn = $(e.target), showMap = btn.hasClass('btn-map');
-		btn[showMap ? 'removeClass' : 'addClass']('btn-map')
-		   [showMap ? 'addClass' : 'removeClass']('btn-panel');
+		var btn = $(e.target);
+		btn.toggleClass('btn-map').toggleClass('btn-panel');
 		$('#panel').slideToggle();
 	},
 	/** 
