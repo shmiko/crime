@@ -173,8 +173,7 @@ remotes {
 
 task deploy(dependsOn: [archive]) << {
 	def archiveDir = project.ext['archive.dir']
-	def mobileDir = project.ext['mobile.dir']
-	def deployDir = "${mobileDir}/${remoteDir}"
+	def deployDir = project.ext['crime.deploy.dir']
 	
 	remotes.deployTarget.host = project.ext["${env}.host"]
     remotes.deployTarget.user = project.ext["${env}.user"]	
