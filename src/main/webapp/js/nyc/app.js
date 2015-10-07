@@ -213,7 +213,7 @@ nyc.App.prototype = {
 						me.boro = data.rows[0].boro;
 						me.updateSummaryChart();
 					}else{
-						$('#chart-pct').addClass('chart-none');
+						$('#chart-sum').addClass('chart-none');
 					}
 				}
 			);
@@ -395,10 +395,10 @@ nyc.App.prototype = {
 	 * @method
 	 */
 	updateSummaryChart: function(){
-		if (this.location && $('#chart-pct:visible').length){
+		if (this.location && $('#chart-sum:visible').length){
 			var filters = this.chartFilters();
-			this.summaryChart.chart($('#chart-pct canvas'), filters.filterValues, $('#chart-pct .chart-title'), filters.descriptionValues);
-			$('#chart-pct').removeClass('chart-none');
+			this.summaryChart.chart(filters.filterValues, $('#chart-sum .chart-title'), filters.descriptionValues);
+			$('#chart-sum').removeClass('chart-none');
 		}
 	},
 	/**
@@ -416,7 +416,7 @@ nyc.App.prototype = {
 	updatePrecinctChart: function(){
 		if ($('#chart-all').position().left < $(window).width()){
 			var filters = this.chartFilters();
-			this.precinctChart.chart($('#chart-all canvas'), filters.filterValues, $('#chart-all .chart-title'), filters.descriptionValues);		
+			this.precinctChart.chart(filters.filterValues, $('#chart-all .chart-title'), filters.descriptionValues);		
 		}
 	},
 	/**

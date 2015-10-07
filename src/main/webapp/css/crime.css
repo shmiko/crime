@@ -219,7 +219,7 @@ div#map-type-input {
 div.chart-title {
 	height: 55px;
 }
-#chart-pct canvas {
+#chart-sum canvas {
 	width: 300px;
 	height: 145px;
 }
@@ -233,13 +233,13 @@ div.chart-title {
 	left: 10px;
 	bottom: 260px;
 }
-#chart-pct.chart-none div.chart-title, #chart-pct.chart-none canvas {
+#chart-sum.chart-none div.chart-title, #chart-sum.chart-none canvas {
 	display: none;
 }
-#chart-pct div.chart-note {
+#chart-sum div.chart-note {
 	display: none;
 }
-#chart-pct.chart-none div.chart-note {
+#chart-sum.chart-none div.chart-note {
 	display: block;
 	text-align: center;
 	height: 44px;

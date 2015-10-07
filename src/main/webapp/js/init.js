@@ -244,7 +244,8 @@ $(document).ready(function(){
 		var chartDescription = '<div>${displayType} per 1000 Residents</div>';
 			
 		var precinctChart = new nyc.carto.Chart({
-			cartoSql: cartoSql, 
+			cartoSql: cartoSql,
+			canvas: '#chart-all canvas',
 			sqlTemplate: precinctChartSql,
 			descriptionTemplate: chartDescription,
 			dataColumn: 'per1000',
@@ -255,6 +256,7 @@ $(document).ready(function(){
 
 		var summaryChart = new nyc.carto.Chart({
 			cartoSql: cartoSql,
+			canvas: '#chart-sum canvas',
 			sqlTemplate: summaryChartSql,
 			descriptionTemplate: chartDescription,
 			dataColumn: 'per1000',

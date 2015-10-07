@@ -13,6 +13,7 @@ nyc.carto = nyc.carto || {};
  * Object type to hold constructor options for nyc.carto.Chart
  * @export
  * @typedef {Object}
+ * @property {JQuery|Element|string} canvas
  * @property {cartodb.SQL} cartoSql
  * @property {string} sqlTemplate
  * @property {string} descriptionTemplate
@@ -35,6 +36,7 @@ nyc.carto.ChartOptions;
  */
 nyc.carto.Chart = function(options){
 	this.cartoSql = options.cartoSql;
+	this.canvas = $(options.canvas);
 	this.sqlTemplate = options.sqlTemplate;
 	this.descriptionTemplate = options.descriptionTemplate;
 	this.dataColumn = options.dataColumn;
@@ -62,13 +64,12 @@ nyc.carto.Chart.prototype = {
 	 * @param {JQuery|Element|string} titleNode
 	 * @param {Array<Object>} descriptionValues
 	 */ 
-	chart: function(canvas, filterValuesArray, titleNode, descriptionValues){
+	chart: function(filterValuesArray, titleNode, descriptionValues){
 		var me = this, sqls = [], datasets = [];
 		$.each(filterValuesArray, function(_, filterValues){
 			sqls.push(me.sql(me.sqlTemplate, filterValues, me.filters));
 		});		
-		if (!me.isSame(canvas, sqls)){
-			me.canvas = canvas;
+		if (!me.isSame(sqls)){
 			me.prevSqls = sqls;
 			$.each(sqls, function(_, sql){
 				me.cartoSql.execute(sql).done(
@@ -76,7 +77,7 @@ nyc.carto.Chart.prototype = {
 						datasets.push(data.rows);
 						if (datasets.length == filterValuesArray.length){
 							me.title(titleNode, descriptionValues);
-							me.render(canvas, datasets);
+							me.render(datasets);
 						}
 					}
 				);
@@ -86,14 +87,11 @@ nyc.carto.Chart.prototype = {
 	/**
 	 * @private
 	 * @method 
-	 * @param {JQuery} canvas 
 	 * @param {Array<string>} sqls 
 	 * @return {boolean}
 	 */
-	isSame: function(canvas, sqls){
-		if (!this.canvas) return false;
-		if (canvas.get(0) != this.canvas.get(0)) return false;
-		if (sqls.length != this.prevSqls.length) return false;
+	isSame: function(sqls){
+		if (!this.prevSqls || sqls.length != this.prevSqls.length) return false;
 		for (var i = 0; i < sqls.length; ++i) {
 			if (sqls[i] != this.prevSqls[i]) return false;
 		}
@@ -170,15 +168,15 @@ nyc.carto.Chart.prototype = {
 	 * @param {JQuery} canvas 
 	 * @param {Array<Object>} datasets 
 	 */
-	render: function(canvas, datasets){
-		var chart = canvas.data('chart'), ctx = canvas.get(0).getContext('2d'), data = this.data(datasets);
+	render: function(datasets){
+		var chart = this.canvas.data('chart'), ctx = this.canvas.get(0).getContext('2d'), data = this.data(datasets);
 		if (chart) chart.destroy();
 		chart = new Chart(ctx).Bar(data, {
 			scaleFontColor: 'black',
 			scaleLineColor: 'rgba(0,0,0,0.3)',
 			customTooltips: this.tip
 		});
-		$(canvas).data('chart', chart);
+		this.canvas.data('chart', chart);
 	}
 };
 

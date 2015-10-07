@@ -80,7 +80,7 @@ QUnit.module('nyc.nyc.carto.Chart', {
 });
 
 QUnit.test('chart (isSame = false)', function(assert){
-	assert.expect(10);
+	assert.expect(8);
 	
 	var me = this;
 	
@@ -88,6 +88,7 @@ QUnit.test('chart (isSame = false)', function(assert){
 	
 	var chart = new nyc.carto.Chart({
 		cartoSql: this.MOCK_CARTO_SQL,
+		canvas: null,
 		sqlTemplate: this.SQL_TEMPLATE,
 		descriptionTemplate: '<div>${displayType} per 1000 Residents</div>',
 		dataColumn: 'per1000',
@@ -96,8 +97,7 @@ QUnit.test('chart (isSame = false)', function(assert){
 		labelLookupFunction: function(lbl){return lbl + ' (label)';}
 	});
 	
-	chart.render = function(canvas, datasets){
-		assert.equal(canvas, 'MockCanvas');
+	chart.render = function(datasets){
 		assert.equal(datasets.length, 2);
 		assert.equal(datasets[0], 'dataset0');
 		assert.equal(datasets[1], 'dataset1');
@@ -108,8 +108,7 @@ QUnit.test('chart (isSame = false)', function(assert){
 		assert.equal(descriptionValues, 'descriptions');
 	};
 	
-	chart.isSame = function(canvas, sqls){
-		assert.equal(canvas, 'MockCanvas');
+	chart.isSame = function(sqls){
 		assert.equal(sqls.length, 2);
 		assert.equal(sqls[0], me.SERIES_SQL[0]);
 		assert.equal(sqls[1], me.SERIES_SQL[1]);
@@ -117,58 +116,14 @@ QUnit.test('chart (isSame = false)', function(assert){
 	};
 	
 	chart.chart(
-		'MockCanvas',
 		this.FILTER_VALUES,
 		'MockTitleNode',
 		'descriptions'
 	);
 });
 
-QUnit.test('chart (only one series)', function(assert){
-	assert.expect(8);
-	
-	var me = this;
-	
-	this.MOCK_CARTO_SQL.returnDatas = [{rows: 'dataset0'}];
-	
-	var chart = new nyc.carto.Chart({
-		cartoSql: this.MOCK_CARTO_SQL,
-		sqlTemplate: this.SQL_TEMPLATE,
-		descriptionTemplate: '<div>${displayType} per 1000 Residents</div>',
-		dataColumn: 'per1000',
-		labelColumn: 'pct',
-		filters: this.FILTERS,
-		labelLookupFunction: function(lbl){return lbl + ' (label)';}
-	});
-	
-	chart.render = function(canvas, datasets){
-		assert.equal(canvas, 'MockCanvas');
-		assert.equal(datasets.length, 1);
-		assert.equal(datasets[0], 'dataset0');
-	};
-	
-	chart.title = function(titleNode, descriptionValues){
-		assert.equal(titleNode, 'MockTitleNode');
-		assert.equal(descriptionValues, 'descriptions');
-	};
-	
-	chart.isSame = function(canvas, sqls){
-		assert.equal(canvas, 'MockCanvas');
-		assert.equal(sqls.length, 1);
-		assert.equal(sqls[0], me.SERIES_SQL[0]);
-		return false;
-	};
-	
-	chart.chart(
-		'MockCanvas',
-		[this.FILTER_VALUES[0]],
-		'MockTitleNode',
-		'descriptions'
-	);
-});
-
 QUnit.test('chart (isSame = true)', function(assert){
-	assert.expect(8);
+	assert.expect(6);
 	
 	var me = this;
 	
@@ -176,6 +131,7 @@ QUnit.test('chart (isSame = true)', function(assert){
 	
 	var chart = new nyc.carto.Chart({
 		cartoSql: this.MOCK_CARTO_SQL,
+		canvas: null,
 		sqlTemplate: this.SQL_TEMPLATE,
 		descriptionTemplate: '<div>${displayType} per 1000 Residents</div>',
 		dataColumn: 'per1000',
@@ -185,8 +141,7 @@ QUnit.test('chart (isSame = true)', function(assert){
 	});
 
 	var same = false;
-	chart.isSame = function(canvas, sqls){
-		assert.equal(canvas, 'MockCanvas');
+	chart.isSame = function(sqls){
 		assert.equal(sqls.length, 2);
 		assert.equal(sqls[0], me.SERIES_SQL[0]);
 		assert.equal(sqls[1], me.SERIES_SQL[1]);
@@ -195,7 +150,6 @@ QUnit.test('chart (isSame = true)', function(assert){
 	same = true;
 	
 	chart.chart(
-		'MockCanvas',
 		this.FILTER_VALUES,
 		'MockTitleNode',
 		'descriptions'
@@ -210,8 +164,48 @@ QUnit.test('chart (isSame = true)', function(assert){
 	};
 	
 	chart.chart(
-		'MockCanvas',
 		this.FILTER_VALUES,
+		'MockTitleNode',
+		'descriptions'
+	);
+});
+
+QUnit.test('chart (only one series)', function(assert){
+	assert.expect(6);
+	
+	var me = this;
+	
+	this.MOCK_CARTO_SQL.returnDatas = [{rows: 'dataset0'}];
+	
+	var chart = new nyc.carto.Chart({
+		cartoSql: this.MOCK_CARTO_SQL,
+		canvas: null,
+		sqlTemplate: this.SQL_TEMPLATE,
+		descriptionTemplate: '<div>${displayType} per 1000 Residents</div>',
+		dataColumn: 'per1000',
+		labelColumn: 'pct',
+		filters: this.FILTERS,
+		labelLookupFunction: function(lbl){return lbl + ' (label)';}
+	});
+	
+	chart.render = function(datasets){
+		assert.equal(datasets.length, 1);
+		assert.equal(datasets[0], 'dataset0');
+	};
+	
+	chart.title = function(titleNode, descriptionValues){
+		assert.equal(titleNode, 'MockTitleNode');
+		assert.equal(descriptionValues, 'descriptions');
+	};
+	
+	chart.isSame = function(sqls){
+		assert.equal(sqls.length, 1);
+		assert.equal(sqls[0], me.SERIES_SQL[0]);
+		return false;
+	};
+	
+	chart.chart(
+		[this.FILTER_VALUES[0]],
 		'MockTitleNode',
 		'descriptions'
 	);
