@@ -8,7 +8,6 @@ plugins {
 
 ext{
 	default_env = 'local'
-	remoteDir = 'crime'
 	isWindows = Os.isFamily(Os.FAMILY_WINDOWS)
 	
 	orderedCssFiles = ['control-common.css', 'collapsible.css', 'zoomsearch.css', 'legend.css', 'chart.css', 'share.css', 'crime.css']

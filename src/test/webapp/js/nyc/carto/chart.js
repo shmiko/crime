@@ -211,3 +211,175 @@ QUnit.test('chart (only one series)', function(assert){
 	);
 });
 
+QUnit.test('isSame', function(assert){
+	assert.expect(3);
+	
+	var chart = new nyc.carto.Chart({
+		cartoSql: this.MOCK_CARTO_SQL,
+		canvas: null,
+		sqlTemplate: this.SQL_TEMPLATE,
+		descriptionTemplate: '<div>${displayType} per 1000 Residents</div>',
+		dataColumn: 'per1000',
+		labelColumn: 'pct',
+		filters: this.FILTERS,
+		labelLookupFunction: function(lbl){return lbl + ' (label)';}
+	});
+	
+	assert.notOk(chart.isSame(['sql1', 'sql2']));
+	chart.prevSqls = ['sql1'];
+	assert.notOk(chart.isSame(['sql1', 'sql2']));
+	chart.prevSqls = ['sql1', 'sql2'];
+	assert.ok(chart.isSame(['sql1', 'sql2']));
+});
+
+QUnit.test('title', function(assert){
+	assert.expect(2);
+	
+	var chart = new nyc.carto.Chart({
+		cartoSql: this.MOCK_CARTO_SQL,
+		canvas: null,
+		sqlTemplate: this.SQL_TEMPLATE,
+		descriptionTemplate: '<div>${displayType} per 1000 Residents</div>',
+		dataColumn: 'per1000',
+		labelColumn: 'pct',
+		filters: this.FILTERS,
+		labelLookupFunction: function(lbl){return lbl + ' (label)';}
+	});
+	
+	var div = $('<div></div>');
+	
+	chart.title(div, {displayType: 'Felony Assaults', seriesTitles: ['7/1/2015 - 7/31/2015', '7/1/2014 - 7/31/2014']});
+	assert.equal(div.html(), '<div>Felony Assaults per 1000 Residents</div><div class="chart-series chart-series-0"><div class="chart-series-icon"></div>7/1/2015 - 7/31/2015</div><div class="chart-series chart-series-1"><div class="chart-series-icon"></div>7/1/2014 - 7/31/2014</div>');
+	
+	chart.title(div, {displayType: 'Felony Assaults', seriesTitles: ['7/1/2015 - 7/31/2015']});
+	assert.equal(div.html(), '<div>Felony Assaults per 1000 Residents</div><div class="chart-series chart-series-0"><div class="chart-series-icon"></div>7/1/2015 - 7/31/2015</div>');
+
+	div.remove();
+});
+
+QUnit.test('data', function(assert){
+	assert.expect(1);
+	
+	var chart = new nyc.carto.Chart({
+		cartoSql: this.MOCK_CARTO_SQL,
+		canvas: null,
+		sqlTemplate: this.SQL_TEMPLATE,
+		descriptionTemplate: '<div>${displayType} per 1000 Residents</div>',
+		dataColumn: 'per1000',
+		labelColumn: 'pct',
+		filters: this.FILTERS,
+		labelLookupFunction: function(lbl){return lbl + ' (label)';}
+	});
+	
+	var dataset0 = [{pct: 1, per1000: 2}, {pct: 2, per1000: 3}, {pct: 3, per1000: 4}];
+	var dataset1 = [{pct: 1, per1000: 3}, {pct: 2, per1000: 2}, {pct: 3, per1000: 1}];
+	
+	var result = chart.data([dataset0, dataset1]);
+	
+	assert.deepEqual(
+		result, 
+		{
+			datasets: [
+	            {
+		      		data: [2, 3, 4],
+		       		fillColor: 'black',
+		       		strokeColor: 'transparent'
+		       	},
+		       	{
+		       		data: [3, 2, 1],
+		       		fillColor: 'rgba(0,0,0,0.3)',
+		       		strokeColor: 'transparent'
+		       	}
+	       	],
+	       	labels: ['1 (label)', '2 (label)', '3 (label)']
+		}
+	);
+});
+
+QUnit.test('tip', function(assert){
+	assert.expect(5);
+	
+	var canvas = $('<canvas style="position:absolute;left:100px;top:200px;"></canvas>');
+	var div = $('<div id="chart-tip"></div>');
+	$('body').append(div);
+	$('body').append(canvas);
+	
+	var chart = new nyc.carto.Chart({
+		cartoSql: this.MOCK_CARTO_SQL,
+		canvas: canvas,
+		sqlTemplate: this.SQL_TEMPLATE,
+		descriptionTemplate: '<div>${displayType} per 1000 Residents</div>',
+		dataColumn: 'per1000',
+		labelColumn: 'pct',
+		filters: this.FILTERS,
+		labelLookupFunction: function(lbl){return lbl + ' (label)';}
+	});
+	
+	assert.equal(div.css('display'), 'block');
+	
+	chart.tip();
+	assert.equal(div.css('display'), 'none');
+	
+	chart.tip({
+		chart: {canvas: canvas.get(0)},
+		title: 'Chart title',
+		labels: ['label1', 'lable2'],
+		x: 0,
+		y: 100
+	});
+	assert.equal(div.css('display'), 'block');
+	assert.equal(div.css('left'), '100px');
+	assert.equal(div.css('top'), '290px');
+	
+	div.remove();
+	canvas.remove();
+});
+
+QUnit.test('render', function(assert){
+	assert.expect(9);
+	
+	var canvas = $('<canvas></canvas>');
+
+	var mockBarChart = {
+		destroy: function(){
+			assert.ok(true);
+		}
+	};
+	var MockChart = function(ctx){
+		assert.deepEqual(ctx, canvas.get(0).getContext('2d'));
+	};
+	MockChart.prototype = {
+		Bar: function(data){
+			assert.equal(data, 'mockData');
+			return mockBarChart;
+		}
+	};
+	
+	ActualChart = Chart;
+	Chart = MockChart;
+	
+	var chart = new nyc.carto.Chart({
+		cartoSql: this.MOCK_CARTO_SQL,
+		canvas: canvas,
+		sqlTemplate: this.SQL_TEMPLATE,
+		descriptionTemplate: '<div>${displayType} per 1000 Residents</div>',
+		dataColumn: 'per1000',
+		labelColumn: 'pct',
+		filters: this.FILTERS,
+		labelLookupFunction: function(lbl){return lbl + ' (label)';}
+	});
+
+	chart.data = function(datasets){
+		assert.equal(datasets, 'mockDatasets');
+		return 'mockData';
+	};
+	
+	chart.render('mockDatasets');
+	assert.deepEqual(canvas.data('chart'), mockBarChart);
+	//do it again to test that the last chart created is destroyed
+	chart.render('mockDatasets');	
+	assert.deepEqual(canvas.data('chart'), mockBarChart);
+
+	Chart = ActualChart;
+
+});

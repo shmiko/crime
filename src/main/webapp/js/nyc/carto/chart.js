@@ -20,6 +20,8 @@ nyc.carto = nyc.carto || {};
  * @property {string} dataColumn 
  * @property {string} labelColumn 
  * @property {Object} filters 
+ * @property {Object=} chartOptions 
+ * @property {Array<Object>=} seriesOptions 
  * @property {function(string):string=} labelLookupFunction 
  */
 nyc.carto.ChartOptions;
@@ -42,6 +44,8 @@ nyc.carto.Chart = function(options){
 	this.dataColumn = options.dataColumn;
 	this.labelColumn = options.labelColumn;
 	this.filters = options.filters;
+	this.chartOptions = options.chartOptions || {scaleFontColor: 'black', scaleLineColor: 'rgba(0,0,0,0.3)', customTooltips: this.tip};
+	this.seriesOptions = options.seriesOptions || [{fillColor: 'black', strokeColor: 'transparent'}, {fillColor: 'rgba(0,0,0,0.3)', strokeColor: 'transparent'}];
 	this.labelLookupFunction = options.labelLookupFunction || function(lbl){return lbl;};
 };
 
@@ -122,10 +126,10 @@ nyc.carto.Chart.prototype = {
 		var dataCol = this.dataColumn,
 			labelCol = this.labelColumn,
 			labelLookupFunction = this.labelLookupFunction,
-			datasetProps = [{fillColor: 'black', strokeColor: 'transparent'}, {fillColor: 'rgba(0,0,0,0.3)', strokeColor: 'transparent'}],
+			seriesOptions =  this.seriesOptions,
 			data = {labels: [], datasets: []};
 		$.each(datasets, function(i, rows){
-			var labels = [], dataset = datasetProps[i];
+			var labels = [], dataset = seriesOptions[i];
 			dataset.data = [];
 			$.each(rows, function(_, row){
 				if (i == 0){
@@ -171,11 +175,7 @@ nyc.carto.Chart.prototype = {
 	render: function(datasets){
 		var chart = this.canvas.data('chart'), ctx = this.canvas.get(0).getContext('2d'), data = this.data(datasets);
 		if (chart) chart.destroy();
-		chart = new Chart(ctx).Bar(data, {
-			scaleFontColor: 'black',
-			scaleLineColor: 'rgba(0,0,0,0.3)',
-			customTooltips: this.tip
-		});
+		chart = new Chart(ctx).Bar(data, this.chartOptions);
 		this.canvas.data('chart', chart);
 	}
 };
