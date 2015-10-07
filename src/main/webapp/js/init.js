@@ -292,27 +292,27 @@ $(document).ready(function(){
 				maxMonth: max.substr(4, 2) - 1,
 				maxYear: max.substr(0, 4) * 1
 			});
-			
-			nyc.app = new nyc.App(
-				vis,
-				viewSwitcher,
-				new nyc.leaf.Locate(
+			 
+			nyc.app = new nyc.App({
+				map: vis.getNativeMap(),
+				viewSwitcher: viewSwitcher,
+				locate: new nyc.leaf.Locate(
 					vis.getNativeMap(),
 					new nyc.Geoclient('//maps.nyc.gov/geoclient/v1/search.json?app_key=YOUR_APP_KEY&app_id=YOUR_APP_ID', 'EPSG:4326'),
 					nyc.leaf.EXTENT
 				),
-				controls,
-				mapType,
-				crimeType, 
-				dateRange,
-				precinctChart,
-				summaryChart,
-				new nyc.carto.Dao(
+				controls: controls,
+				mapType: mapType,
+				crimeType: crimeType, 
+				dateRange: dateRange,
+				precinctChart: precinctChart,
+				summaryChart: summaryChart,
+				locationInfo: new nyc.carto.Dao(
 					cartoSql,
 					"SELECT pct, boro FROM stg_crime_precinct WHERE ${where}",
 					{location: "ST_CONTAINS(the_geom, ST_SETSRID(ST_MAKEPOINT(${lng}, ${lat}), 4326))"}
 				),
-				new nyc.carto.Dao(
+				crimeDrillDown: new nyc.carto.Dao(
 					cartoSql,
 					"SELECT count(type) AS crime_count, type FROM stg_crime_location WHERE ${where} GROUP BY type ORDER BY type",
 					{
@@ -321,7 +321,7 @@ $(document).ready(function(){
 						location: "the_geom_webmercator = ST_SETSRID(ST_MAKEPOINT(${x}, ${y}), 3857)"
 					}
 				)
-			);	
+			});	
 			$('div.cartodb-logo').hide();
 		});
 

@@ -21,6 +21,12 @@ function setup(assert, hooks){
 		},
 		show: function(){
 			this.showHide = 'show';
+		},
+		infowindow: {
+			setArgs: [],
+			set: function(args){
+				this.setArgs.push(args);
+			}
 		}
 	};
 	

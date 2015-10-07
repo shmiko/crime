@@ -5,53 +5,61 @@
 window.nyc = window.nyc || {};
 
 /**
+ * Object type to hold constructor options for nyc.App
+ * @export
+ * @typedef {Object}
+ * @property {L.Map} map
+ * @property {nyc.carto.ViewSwtcher} viewSwitcher
+ * @property {nyc.Locate} locate
+ * @property {nyc.ZoomSearch} controls
+ * @property {nyc.Radio} mapType
+ * @property {nyc.Radio} crimeType
+ * @property {nyc.MonthRangePicker} dateRange
+ * @property {nyc.Chart} precinctChart
+ * @property {nyc.Chart} summaryChart
+ * @property {nyc.carto.Dao} locationInfo
+ * @property {nyc.carto.Dao} crimeDrillDown
+ */
+nyc.AppOptions;
+
+/**
  * @export
  * @class
  * @classdesc A class to manage user interaction with the hurricane map
  * @constructor
- * @param {cdb.core.View} vis
- * @param {nyc.Locate} locate
- * @param {nyc.ZoomSearch} controls
- * @param {nyc.Radio} mapType
- * @param {nyc.Radio} crimeType
- * @param {nyc.MonthRangePicker} dateRange
- * @param {nyc.Chart} precinctChart
- * @param {nyc.Chart} summaryChart
- * @param {nyc.carto.Dao} locationInfo
- * @param {nyc.carto.Dao} crimeDrillDow
+ * @param {nyc.AppOptions} options
  */
-nyc.App = function(vis, viewSwitcher, locate, controls, mapType, crimeType, dateRange, precinctChart, summaryChart, locationInfo, crimeDrillDown){
+nyc.App = function(options){
 	var me = this;
-	me.vis = vis;
-	me.map = vis.getNativeMap();
-	me.viewSwitcher = viewSwitcher;
-	me.locate = locate;
-	me.controls = controls;
-	me.mapType = mapType;
-	me.crimeType = crimeType;
-	me.dateRange = dateRange;
-	me.precinctChart = precinctChart;
-	me.summaryChart = summaryChart;
-	me.locationInfo = locationInfo;
-	me.crimeDrillDown = crimeDrillDown;
+	me.map = options.map;
+	me.viewSwitcher = options.viewSwitcher;
+	me.locate = options.locate;
+	me.controls = options.controls;
+	me.mapType = options.mapType;
+	me.crimeType = options.crimeType;
+	me.dateRange = options.dateRange;
+	me.precinctChart = options.precinctChart;
+	me.summaryChart = options.summaryChart;
+	me.locationInfo = options.locationInfo;
+	me.crimeDrillDown = options.crimeDrillDown;
 	
-	viewSwitcher.views.location.layer.infowindow.set({maxHeight: "none", sanitizeTemplate: false});
-	viewSwitcher.views.precinct.layer.infowindow.set({maxHeight: "none", sanitizeTemplate: false});
+	me.viewSwitcher.views.location.layer.infowindow.set({maxHeight: "none", sanitizeTemplate: false});
+	me.viewSwitcher.views.precinct.layer.infowindow.set({maxHeight: "none", sanitizeTemplate: false});
 	
-	viewSwitcher.on('updated', me.updateLegend);
-	mapType.on('change', function(){$('#legend').empty();});
-	mapType.on('change', $.proxy(me.updateView, me));
-	crimeType.on('change', $.proxy(me.updateView, me));
-	dateRange.on('change', $.proxy(me.updateView, me));
+	me.viewSwitcher.on('updated', me.updateLegend);
+	me.mapType.on('change', function(){$('#legend').empty();});
+	me.mapType.on('change', $.proxy(me.updateView, me));
+	me.crimeType.on('change', $.proxy(me.updateView, me));
+	me.dateRange.on('change', $.proxy(me.updateView, me));
 	
-	locate.on(nyc.Locate.LocateEventType.GEOCODE, $.proxy(me.located, me));
-	locate.on(nyc.Locate.LocateEventType.GEOLOCATION, $.proxy(me.located, me));
-	locate.on(nyc.Locate.LocateEventType.ERROR, $.proxy(me.error, me));
-	locate.on(nyc.Locate.LocateEventType.AMBIGUOUS, $.proxy(me.ambiguous, me));
+	me.locate.on(nyc.Locate.LocateEventType.GEOCODE, $.proxy(me.located, me));
+	me.locate.on(nyc.Locate.LocateEventType.GEOLOCATION, $.proxy(me.located, me));
+	me.locate.on(nyc.Locate.LocateEventType.ERROR, $.proxy(me.error, me));
+	me.locate.on(nyc.Locate.LocateEventType.AMBIGUOUS, $.proxy(me.ambiguous, me));
 
-	controls.on(nyc.ZoomSearch.EventType.SEARCH, $.proxy(locate.search, locate));
-	controls.on(nyc.ZoomSearch.EventType.GEOLOCATE, $.proxy(locate.locate, locate));
-	controls.on(nyc.ZoomSearch.EventType.DISAMBIGUATED, $.proxy(me.located, me));
+	me.controls.on(nyc.ZoomSearch.EventType.SEARCH, $.proxy(me.locate.search, me.locate));
+	me.controls.on(nyc.ZoomSearch.EventType.GEOLOCATE, $.proxy(me.locate.locate, me.locate));
+	me.controls.on(nyc.ZoomSearch.EventType.DISAMBIGUATED, $.proxy(me.located, me));
 
 	$('#btn-toggle').click(me.toggle);
 	$('#chart-pane').collapsible({
@@ -62,11 +70,7 @@ nyc.App = function(vis, viewSwitcher, locate, controls, mapType, crimeType, date
 	$(window).resize(me.resize);
 	$('#chart-all').css('left', $(window).width() + 50 + 'px');
 
-	$('*').mousemove(function(e){
-		if (!$.contains($('#map').get(0), e.target) || $.contains($('.cartodb-popup').get(0), e.target)){
-			$('.cartodb-tooltip').hide();
-		}
-	});
+	$('*').mousemove(me.hideTip);
 	
 	me.updateView();
 };
@@ -111,7 +115,7 @@ nyc.App.prototype = {
 	 * @param {Object} args
 	 */
 	drillDownLink: function(args){
-		if (args.type == 'Crimes' && args.crime_count > 0){
+		if (args.type == 'Crimes' && args.crime_count){
 			var me = this, btn = $('div.cartodb-popup.v2 .cartodb-popup-content .crime-count');
 			btn.addClass('ui-btn-icon-left')
 				.addClass('ui-icon-carat-d')
@@ -429,5 +433,16 @@ nyc.App.prototype = {
 		$('#alert').fadeIn();
 		$('#alert button').focus();
 		this.controls.searching(false);
+	},
+	/**
+	 * @private 
+	 * @method
+	 * @param {Object} e
+	 */
+	hideTip: function(e){
+		var map = $('#map').get(0), pop = $('.cartodb-popup').get(0);
+		if ((map && !$.contains(map, e.target)) || (pop && $.contains(pop, e.target))){
+			$('.cartodb-tooltip').hide();
+		}
 	}
 }
