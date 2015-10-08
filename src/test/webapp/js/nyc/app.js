@@ -62,13 +62,30 @@ QUnit.module('nyc.App', {
 				callback(this.resultData);
 			}
 		} 
+		
+		var MockRadio = function(){};
+		MockRadio.prototype = {
+			returnVal: null,
+			val: function(){
+				return this.returnVal;
+			}
+		};
+		nyc.inherits(MockRadio, nyc.EventHandling);
+		
+		this.MOCK_MAP_TYPE = new MockRadio();
+		this.MOCK_CRIME_TYPE = new MockRadio();
+		this.MOCK_DATE_RANGE = new MockRadio();
 	},
 	afterEach: function(assert){
 		teardown(assert, this);
+		delete this.MOCK_MAP;
 		delete this.MOCK_VIEW_SWITCHER;
 		delete this.MOCK_CONTROLS;
 		delete this.MOCK_LOCATE;
 		delete this.MOCK_DAO;
+		delete this.MOCK_MAP_TYPE;
+		delete this.MOCK_CRIME_TYPE;
+		delete this.MOCK_DATE_RANGE;
 	}	
 });
 
@@ -90,9 +107,9 @@ QUnit.test('drillDownLink', function(assert){
 		viewSwitcher: this.MOCK_VIEW_SWITCHER,
 		locate: this.MOCK_LOCATE,
 		controls: this.MOCK_CONTROLS,
-		mapType: new nyc.EventHandling(),
+		mapType: this.MOCK_MAP_TYPE,
 		crimeType: new nyc.EventHandling(), 
-		dateRange: new nyc.EventHandling()
+		dateRange: this.MOCK_DATE_RANGE
 	});	
 	
 	app.drillDownLink({});
@@ -129,9 +146,9 @@ QUnit.test('drillDownLink (click first time)', function(assert){
 		viewSwitcher: this.MOCK_VIEW_SWITCHER,
 		locate: this.MOCK_LOCATE,
 		controls: this.MOCK_CONTROLS,
-		mapType: new nyc.EventHandling(),
+		mapType: this.MOCK_MAP_TYPE,
 		crimeType: new nyc.EventHandling(), 
-		dateRange: new nyc.EventHandling()
+		dateRange: this.MOCK_DATE_RANGE
 	});	
 	app.drillDown = function(args){
 		assert.deepEqual(args, {type: 'Crimes', crime_count: 5});
@@ -172,9 +189,9 @@ QUnit.test('drillDownLink (click again)', function(assert){
 		viewSwitcher: this.MOCK_VIEW_SWITCHER,
 		locate: this.MOCK_LOCATE,
 		controls: this.MOCK_CONTROLS,
-		mapType: new nyc.EventHandling(),
+		mapType: this.MOCK_MAP_TYPE,
 		crimeType: new nyc.EventHandling(), 
-		dateRange: new nyc.EventHandling()
+		dateRange: this.MOCK_DATE_RANGE
 	});	
 	app.panPopup = function(args){
 		assert.ok(true);
@@ -221,9 +238,9 @@ QUnit.test('drillDown (precint view)', function(assert){
 		viewSwitcher: this.MOCK_VIEW_SWITCHER,
 		locate: this.MOCK_LOCATE,
 		controls: this.MOCK_CONTROLS,
-		mapType: new nyc.EventHandling(),
+		mapType: this.MOCK_MAP_TYPE,
 		crimeType: new nyc.EventHandling(), 
-		dateRange: new nyc.EventHandling(),
+		dateRange: this.MOCK_DATE_RANGE,
 		crimeDrillDown: this.MOCK_DAO
 	});	
 	app.panPopup = function(args){
@@ -272,9 +289,9 @@ QUnit.test('drillDown (location view)', function(assert){
 		viewSwitcher: this.MOCK_VIEW_SWITCHER,
 		locate: this.MOCK_LOCATE,
 		controls: this.MOCK_CONTROLS,
-		mapType: new nyc.EventHandling(),
+		mapType: this.MOCK_MAP_TYPE,
 		crimeType: new nyc.EventHandling(), 
-		dateRange: new nyc.EventHandling(),
+		dateRange: this.MOCK_DATE_RANGE,
 		crimeDrillDown: this.MOCK_DAO
 	});	
 	app.panPopup = function(args){
@@ -319,9 +336,9 @@ QUnit.test('hideAllChart', function(assert){
 		viewSwitcher: this.MOCK_VIEW_SWITCHER,
 		locate: this.MOCK_LOCATE,
 		controls: this.MOCK_CONTROLS,
-		mapType: new nyc.EventHandling(),
+		mapType: this.MOCK_MAP_TYPE,
 		crimeType: new nyc.EventHandling(), 
-		dateRange: new nyc.EventHandling()
+		dateRange: this.MOCK_DATE_RANGE
 	});	
 
 	app.hideAllChart();
@@ -353,9 +370,9 @@ QUnit.test('toggle', function(assert){
 		viewSwitcher: this.MOCK_VIEW_SWITCHER,
 		locate: this.MOCK_LOCATE,
 		controls: this.MOCK_CONTROLS,
-		mapType: new nyc.EventHandling(),
+		mapType: this.MOCK_MAP_TYPE,
 		crimeType: new nyc.EventHandling(), 
-		dateRange: new nyc.EventHandling()
+		dateRange: this.MOCK_DATE_RANGE
 	});	
 
 	btn.trigger('click');
@@ -396,9 +413,9 @@ QUnit.test('panPopup', function(assert){
 		viewSwitcher: this.MOCK_VIEW_SWITCHER,
 		locate: this.MOCK_LOCATE,
 		controls: this.MOCK_CONTROLS,
-		mapType: new nyc.EventHandling(),
+		mapType: this.MOCK_MAP_TYPE,
 		crimeType: new nyc.EventHandling(), 
-		dateRange: new nyc.EventHandling()
+		dateRange: this.MOCK_DATE_RANGE
 	});	
 
 	app.panPopup(); //pan map because popup is above top
@@ -431,9 +448,9 @@ QUnit.test('ambiguous (possible)', function(assert){
 		viewSwitcher: this.MOCK_VIEW_SWITCHER,
 		locate: this.MOCK_LOCATE,
 		controls: this.MOCK_CONTROLS,
-		mapType: new nyc.EventHandling(),
+		mapType: this.MOCK_MAP_TYPE,
 		crimeType: new nyc.EventHandling(), 
-		dateRange: new nyc.EventHandling()
+		dateRange: this.MOCK_DATE_RANGE
 	});	
 
 	var possible = [{
@@ -475,9 +492,9 @@ QUnit.test('ambiguous (bad input)', function(assert){
 		viewSwitcher: this.MOCK_VIEW_SWITCHER,
 		locate: this.MOCK_LOCATE,
 		controls: this.MOCK_CONTROLS,
-		mapType: new nyc.EventHandling(),
+		mapType: this.MOCK_MAP_TYPE,
 		crimeType: new nyc.EventHandling(), 
-		dateRange: new nyc.EventHandling()
+		dateRange: this.MOCK_DATE_RANGE
 	});	
 
 	app.alert = function(msg){
@@ -505,9 +522,9 @@ QUnit.test('currentPrecinct (precinct != null, boro != null)', function(assert){
 		viewSwitcher: this.MOCK_VIEW_SWITCHER,
 		locate: this.MOCK_LOCATE,
 		controls: this.MOCK_CONTROLS,
-		mapType: new nyc.EventHandling(),
+		mapType: this.MOCK_MAP_TYPE,
 		crimeType: new nyc.EventHandling(), 
-		dateRange: new nyc.EventHandling()
+		dateRange: this.MOCK_DATE_RANGE
 	});	
 	app.updateSummaryChart = function(){
 		assert.ok(true);
@@ -547,9 +564,9 @@ QUnit.test('currentPrecinct (precinct = null, boro != null)', function(assert){
 		viewSwitcher: this.MOCK_VIEW_SWITCHER,
 		locate: this.MOCK_LOCATE,
 		controls: this.MOCK_CONTROLS,
-		mapType: new nyc.EventHandling(),
+		mapType: this.MOCK_MAP_TYPE,
 		crimeType: new nyc.EventHandling(), 
-		dateRange: new nyc.EventHandling(),
+		dateRange: this.MOCK_DATE_RANGE,
 		locationInfo: this.MOCK_DAO
 	});	
 	app.updateSummaryChart = function(){
@@ -581,9 +598,9 @@ QUnit.test('currentPrecinct (precinct != null, boro = null)', function(assert){
 		viewSwitcher: this.MOCK_VIEW_SWITCHER,
 		locate: this.MOCK_LOCATE,
 		controls: this.MOCK_CONTROLS,
-		mapType: new nyc.EventHandling(),
+		mapType: this.MOCK_MAP_TYPE,
 		crimeType: new nyc.EventHandling(), 
-		dateRange: new nyc.EventHandling(),
+		dateRange: this.MOCK_DATE_RANGE,
 		locationInfo: this.MOCK_DAO
 	});	
 	app.updateSummaryChart = function(){
@@ -618,9 +635,9 @@ QUnit.test('currentPrecinct (no chart)', function(assert){
 		viewSwitcher: this.MOCK_VIEW_SWITCHER,
 		locate: this.MOCK_LOCATE,
 		controls: this.MOCK_CONTROLS,
-		mapType: new nyc.EventHandling(),
+		mapType: this.MOCK_MAP_TYPE,
 		crimeType: new nyc.EventHandling(), 
-		dateRange: new nyc.EventHandling(),
+		dateRange: this.MOCK_DATE_RANGE,
 		locationInfo: this.MOCK_DAO
 	});	
 	app.updateSummaryChart = function(){
@@ -654,9 +671,9 @@ QUnit.test('located (nyc.Locate.LocateEventType.GEOLOCATION, coordiantes != null
 		viewSwitcher: this.MOCK_VIEW_SWITCHER,
 		locate: this.MOCK_LOCATE,
 		controls: this.MOCK_CONTROLS,
-		mapType: new nyc.EventHandling(),
+		mapType: this.MOCK_MAP_TYPE,
 		crimeType: new nyc.EventHandling(), 
-		dateRange: new nyc.EventHandling(),
+		dateRange: this.MOCK_DATE_RANGE,
 		locationInfo: this.MOCK_DAO
 	});	
 	app.locatedCoords = function(data){
@@ -691,9 +708,9 @@ QUnit.test('located (nyc.Locate.LocateEventType.GEOCODE, coordiantes = null, loc
 		viewSwitcher: this.MOCK_VIEW_SWITCHER,
 		locate: this.MOCK_LOCATE,
 		controls: this.MOCK_CONTROLS,
-		mapType: new nyc.EventHandling(),
+		mapType: this.MOCK_MAP_TYPE,
 		crimeType: new nyc.EventHandling(), 
-		dateRange: new nyc.EventHandling(),
+		dateRange: this.MOCK_DATE_RANGE,
 		locationInfo: this.MOCK_DAO
 	});
 	app.locationLayer = 'mockLayer';
@@ -729,9 +746,9 @@ QUnit.test('locatedGeoJson', function(assert){
 		viewSwitcher: this.MOCK_VIEW_SWITCHER,
 		locate: this.MOCK_LOCATE,
 		controls: this.MOCK_CONTROLS,
-		mapType: new nyc.EventHandling(),
+		mapType: this.MOCK_MAP_TYPE,
 		crimeType: new nyc.EventHandling(), 
-		dateRange: new nyc.EventHandling(),
+		dateRange: this.MOCK_DATE_RANGE,
 		locationInfo: this.MOCK_DAO
 	});
 
@@ -777,9 +794,9 @@ QUnit.test('locatedCoords', function(assert){
 		viewSwitcher: this.MOCK_VIEW_SWITCHER,
 		locate: this.MOCK_LOCATE,
 		controls: this.MOCK_CONTROLS,
-		mapType: new nyc.EventHandling(),
+		mapType: this.MOCK_MAP_TYPE,
 		crimeType: new nyc.EventHandling(), 
-		dateRange: new nyc.EventHandling(),
+		dateRange: this.MOCK_DATE_RANGE,
 		locationInfo: this.MOCK_DAO
 	});
 
@@ -812,3 +829,303 @@ QUnit.test('locatedCoords', function(assert){
 	L.marker = marker;
 	nyc.App.prototype.updateView = updateView;
 });
+
+QUnit.test('winWidth', function(assert){
+	assert.expect(2);
+
+	var updateView = nyc.App.prototype.updateView;
+	nyc.App.prototype.updateView = function(){
+		assert.ok(true);
+	};
+	
+	var app = new nyc.App({
+		map: this.MOCK_MAP,
+		viewSwitcher: this.MOCK_VIEW_SWITCHER,
+		locate: this.MOCK_LOCATE,
+		controls: this.MOCK_CONTROLS,
+		mapType: this.MOCK_MAP_TYPE,
+		crimeType: new nyc.EventHandling(), 
+		dateRange: this.MOCK_DATE_RANGE,
+		locationInfo: this.MOCK_DAO
+	});
+
+	assert.equal(app.winWidth(), $(window).width());
+});
+
+QUnit.test('resize (large display)', function(assert){
+	assert.expect(3);
+
+	var updateView = nyc.App.prototype.updateView;
+	nyc.App.prototype.updateView = function(){
+		assert.ok(true);
+	};
+	var winWidth = nyc.App.prototype.winWidth;
+	nyc.App.prototype.winWidth = function(){
+		return 500;
+	};
+	
+	var app = new nyc.App({
+		map: this.MOCK_MAP,
+		viewSwitcher: this.MOCK_VIEW_SWITCHER,
+		locate: this.MOCK_LOCATE,
+		controls: this.MOCK_CONTROLS,
+		mapType: this.MOCK_MAP_TYPE,
+		crimeType: new nyc.EventHandling(), 
+		dateRange: this.MOCK_DATE_RANGE,
+		locationInfo: this.MOCK_DAO
+	});
+	
+	var panel = $('<div id="panel" style="display:none;"></div>');
+	var div = $('<div id="chart-all" style="position:fixed;width:200px;left:0;bottom:0"></div>');
+	$('body').append(panel);
+	$('body').append(div);	
+	
+	$(window).trigger('resize');
+	assert.equal(div.position().left, 0);
+	assert.equal(panel.css('display'), 'block'); 
+	
+	div.remove();
+	panel.remove();
+	nyc.App.prototype.updateView = updateView;
+	nyc.App.prototype.winWidth = winWidth;
+});
+
+QUnit.test('resize (small display)', function(assert){
+	assert.expect(3);
+
+	var updateView = nyc.App.prototype.updateView;
+	nyc.App.prototype.updateView = function(){
+		assert.ok(true);
+	};
+	var winWidth = nyc.App.prototype.winWidth;
+	nyc.App.prototype.winWidth = function(){
+		return 400;
+	};
+	
+	var app = new nyc.App({
+		map: this.MOCK_MAP,
+		viewSwitcher: this.MOCK_VIEW_SWITCHER,
+		locate: this.MOCK_LOCATE,
+		controls: this.MOCK_CONTROLS,
+		mapType: this.MOCK_MAP_TYPE,
+		crimeType: new nyc.EventHandling(), 
+		dateRange: this.MOCK_DATE_RANGE,
+		locationInfo: this.MOCK_DAO
+	});
+	
+	var panel = $('<div id="panel" style="display:none;"></div>');
+	var div = $('<div id="chart-all" style="position:fixed;width:200px;left:100px;bottom:0"></div>');
+	$('body').append(panel);
+	$('body').append(div);	
+	
+	$(window).trigger('resize');
+	assert.equal(div.css('left'), 450 + 'px');
+	assert.equal(panel.css('display'), 'none'); 
+	
+	div.remove();
+	panel.remove();
+	nyc.App.prototype.updateView = updateView;
+	nyc.App.prototype.winWidth = winWidth;
+});
+
+QUnit.test('filters (type = "*", no location)', function(assert){
+	assert.expect(2);
+
+	var updateView = nyc.App.prototype.updateView;
+	nyc.App.prototype.updateView = function(){
+		assert.ok(true);
+	};
+	
+	var app = new nyc.App({
+		map: this.MOCK_MAP,
+		viewSwitcher: this.MOCK_VIEW_SWITCHER,
+		locate: this.MOCK_LOCATE,
+		controls: this.MOCK_CONTROLS,
+		mapType: this.MOCK_MAP_TYPE,
+		crimeType: this.MOCK_CRIME_TYPE, 
+		dateRange: this.MOCK_DATE_RANGE,
+		locationInfo: this.MOCK_DAO
+	});
+	
+	this.MOCK_CRIME_TYPE.returnVal = '*';
+	this.MOCK_DATE_RANGE.returnVal = {start: new Date('2014-01-01T05:00:00.000Z'), end: new Date('2014-10-31T05:00:00.000Z')};
+	
+	assert.deepEqual(
+		app.filters(),
+		{
+			filterValues: {
+				mo: {start: 201401, end: 201410},
+				displayType: {displayType: 'Crimes'}
+			},
+			descriptionValues: {
+				displayType: 'Crimes',
+				displayDates: '1/1/2014 - 10/31/2014'
+			}
+		}
+	);
+	
+	nyc.App.prototype.updateView = updateView;
+});
+
+QUnit.test('filters (type = "ROBBERY", has location)', function(assert){
+	assert.expect(2);
+
+	var updateView = nyc.App.prototype.updateView;
+	nyc.App.prototype.updateView = function(){
+		assert.ok(true);
+	};
+	
+	var app = new nyc.App({
+		map: this.MOCK_MAP,
+		viewSwitcher: this.MOCK_VIEW_SWITCHER,
+		locate: this.MOCK_LOCATE,
+		controls: this.MOCK_CONTROLS,
+		mapType: this.MOCK_MAP_TYPE,
+		crimeType: this.MOCK_CRIME_TYPE, 
+		dateRange: this.MOCK_DATE_RANGE,
+		locationInfo: this.MOCK_DAO
+	});
+	app.location = {};
+	app.precinct = 2;
+	app.boro = 1;
+	
+	this.MOCK_CRIME_TYPE.returnVal = 'ROBBERY';
+	this.MOCK_DATE_RANGE.returnVal = {start: new Date('2014-01-01T05:00:00.000Z'), end: new Date('2014-10-31T05:00:00.000Z')};
+	
+	assert.deepEqual(
+		app.filters(),
+		{
+			filterValues: {
+				mo: {start: 201401, end: 201410},
+				type: {type: 'ROBBERY'},
+				displayType: {displayType: 'Robberies'},
+				pct: {pct: 2},
+				boro: {boro: 1},
+				boroName: {boroName: 'Manhattan'}
+			},
+			descriptionValues: {
+				displayType: 'Robberies',
+				displayDates: '1/1/2014 - 10/31/2014'
+			}
+		}
+	);
+	
+	nyc.App.prototype.updateView = updateView;
+});
+
+QUnit.test('chartFilters (one series)', function(assert){
+	assert.expect(4);
+
+	var updateView = nyc.App.prototype.updateView;
+	nyc.App.prototype.updateView = function(){
+		assert.ok(true);
+	};
+	
+	var app = new nyc.App({
+		map: this.MOCK_MAP,
+		viewSwitcher: this.MOCK_VIEW_SWITCHER,
+		locate: this.MOCK_LOCATE,
+		controls: this.MOCK_CONTROLS,
+		mapType: this.MOCK_MAP_TYPE,
+		crimeType: this.MOCK_CRIME_TYPE, 
+		dateRange: this.MOCK_DATE_RANGE,
+		locationInfo: this.MOCK_DAO
+	});
+	app.location = {};
+	app.precinct = 2;
+	app.boro = 1;
+	
+	var dates = {start: new Date('2014-01-01T05:00:00.000Z'), end: new Date('2014-10-31T05:00:00.000Z')};
+	this.MOCK_CRIME_TYPE.returnVal = 'ROBBERY';
+	this.MOCK_DATE_RANGE.returnVal = dates;
+
+	app.secondSeries = function(start, end){
+		assert.deepEqual(start, dates.start);
+		assert.deepEqual(end, dates.end);
+		return false;
+	};
+
+	assert.deepEqual(
+		app.chartFilters(),
+		{
+			filterValues: [{
+				mo: {start: 201401, end: 201410},
+				type: {type: 'ROBBERY'},
+				displayType: {displayType: 'Robberies'},
+				pct: {pct: 2},
+				boro: {boro: 1},
+				boroName: {boroName: 'Manhattan'}
+			}],
+			descriptionValues: {
+				displayType: 'Robberies',
+				seriesTitles: ['1/1/2014 - 10/31/2014']
+			}
+		}
+	);
+	
+	nyc.App.prototype.updateView = updateView;
+});
+
+QUnit.test('chartFilters (two series)', function(assert){
+	assert.expect(4);
+
+	var updateView = nyc.App.prototype.updateView;
+	nyc.App.prototype.updateView = function(){
+		assert.ok(true);
+	};
+	
+	var app = new nyc.App({
+		map: this.MOCK_MAP,
+		viewSwitcher: this.MOCK_VIEW_SWITCHER,
+		locate: this.MOCK_LOCATE,
+		controls: this.MOCK_CONTROLS,
+		mapType: this.MOCK_MAP_TYPE,
+		crimeType: this.MOCK_CRIME_TYPE, 
+		dateRange: this.MOCK_DATE_RANGE,
+		locationInfo: this.MOCK_DAO
+	});
+	app.location = {};
+	app.precinct = 2;
+	app.boro = 1;
+	
+	var dates = {start: new Date('2014-01-01T05:00:00.000Z'), end: new Date('2014-10-31T05:00:00.000Z')};
+	this.MOCK_CRIME_TYPE.returnVal = 'ROBBERY';
+	this.MOCK_DATE_RANGE.returnVal = dates;
+
+	app.secondSeries = function(start, end){
+		assert.deepEqual(start, dates.start);
+		assert.deepEqual(end, dates.end);
+		return true;
+	};
+
+	assert.deepEqual(
+		app.chartFilters(),
+		{
+			filterValues: [
+				{
+					mo: {start: 201401, end: 201410},
+					type: {type: 'ROBBERY'},
+					displayType: {displayType: 'Robberies'},
+					pct: {pct: 2},
+					boro: {boro: 1},
+					boroName: {boroName: 'Manhattan'}
+				},
+				{
+					mo: {start: 201501, end: 201510},
+					type: {type: 'ROBBERY'},
+					displayType: {displayType: 'Robberies'},
+					pct: {pct: 2},
+					boro: {boro: 1},
+					boroName: {boroName: 'Manhattan'}
+				}
+            ],
+			descriptionValues: {
+				displayType: 'Robberies',
+				seriesTitles: ['1/1/2014 - 10/31/2014', '1/1/2015 - 10/31/2015']
+			}
+		}
+	);
+	
+	nyc.App.prototype.updateView = updateView;
+});
+

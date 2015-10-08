@@ -67,7 +67,7 @@ nyc.App = function(options){
 			me.updateSummaryChart();
 		}
 	});
-	$(window).resize(me.resize);
+	$(window).resize($.proxy(me.resize, me));
 	$('#chart-all').css('left', $(window).width() + 50 + 'px');
 
 	$('*').mousemove(me.hideTip);
@@ -270,13 +270,61 @@ nyc.App.prototype = {
 	 * @private
 	 * @method
 	 */
+	winWidth: function(){
+		return $(window).width();
+	},
+	/**
+	 * @private
+	 * @method
+	 */
 	resize: function(){
 		if ($('#chart-all').position().left > 0){
-			$('#chart-all').css('left', $(window).width() + 50 + 'px');
+			$('#chart-all').css('left',this.winWidth() + 50 + 'px');
 		}
-		if ($(window).width() >= 495){
+		if (this.winWidth() >= 495){
 			$('#panel').show();
 		}
+	},
+	/** 
+	 * @private 
+	 * @method
+	 * @param {number=} yearOffset
+	 * @return {Object}
+	 */
+	filters: function(yearOffset){
+		var crimeType = this.crimeType.val(),
+			start = this.date(this.dateRange.val().start, yearOffset),
+			end = this.date(this.dateRange.val().end, yearOffset),
+			descriptionValues = {
+				displayType: this.crimeTypePlurals[crimeType],
+				displayDates: start.toLocaleDateString() + ' - ' + end.toLocaleDateString()
+			},
+			filterValues = {
+				mo: {
+					start: (start.getFullYear() * 100) + start.getMonth() + 1,
+					end: (end.getFullYear() * 100) + end.getMonth() + 1
+				},
+				displayType: {displayType: this.crimeTypePlurals[crimeType]}
+			};
+		if (crimeType != '*'){
+			filterValues.type = {type: crimeType};
+		}
+		this.appendLocationFilters(filterValues);
+		return {filterValues: filterValues, descriptionValues: descriptionValues};
+	},
+	/** 
+	 * @private 
+	 * @method
+	 * @param {Array<Object>} yearOffset
+	 */
+	appendLocationFilters: function(filterValues){
+		if (this.location){
+			filterValues.pct = {pct: this.precinct};
+			filterValues.boro = {boro: this.boro};
+			filterValues.boroName = {
+				boroName: {'1': 'Manhattan', '2': 'Bronx', '3': 'Brooklyn', '4': 'Queens', '5': 'Staten Isl.'}[this.boro]
+			};
+		}		
 	},
 	/** 
 	 * @private
@@ -328,33 +376,6 @@ nyc.App.prototype = {
 		date = new Date(date);
 		date.setFullYear(date.getFullYear() + yearOffset);
 		return date;
-	},
-	/** 
-	 * @private 
-	 * @method
-	 * @param {number=} yearOffset
-	 * @return {Object}
-	 */
-	filters: function(yearOffset){
-		var crimeType = this.crimeType.val(),
-			start = this.date(this.dateRange.val().start, yearOffset),
-			end = this.date(this.dateRange.val().end, yearOffset),
-			descriptionValues = {
-				displayType: this.crimeTypePlurals[crimeType],
-				displayDates: start.toLocaleDateString() + ' - ' + end.toLocaleDateString()
-			},
-			filterValues = {
-				mo: {
-					start: (start.getFullYear() * 100) + start.getMonth() + 1,
-					end: (end.getFullYear() * 100) + end.getMonth() + 1
-				},
-				displayType: {displayType: this.crimeTypePlurals[crimeType]}
-			};
-		if (crimeType != '*'){
-			filterValues.type = {type: crimeType};
-		}
-		this.appendLocationFilters(filterValues);
-		return {filterValues: filterValues, descriptionValues: descriptionValues};
 	},
 	/** 
 	 * @private 
