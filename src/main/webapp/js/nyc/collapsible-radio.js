@@ -19,6 +19,7 @@ nyc.Radio = function(options){
 
 	nyc.Radio.uniqueId++;
 	
+	me.inputs = [];
 	$.each(me.choices, function(i, choice){
 		var input = $('<input type="radio">').uniqueId(),
 			label = $('<label></label>');
@@ -29,12 +30,11 @@ nyc.Radio = function(options){
 			radio0.attr('checked', true);
 		}
 		input.click($.proxy(me.changed, me));
-		label.attr('for', input.attr('id'))
-			.html(choice.label);
-		fieldset.append(input)
-			.append(label);
+		label.attr('for', input.attr('id')).html(choice.label);
+		fieldset.append(input).append(label);
+		me.inputs.push(input);
 	});
-	
+		
 	$(options.target).append(fieldset).trigger('create');
 
 	nyc.Collapsible.apply(this, [options]);
@@ -45,6 +45,11 @@ nyc.Radio = function(options){
 };
 
 nyc.Radio.prototype = {
+	/**
+	 * @private
+	 * @member {Array<Element>}
+	 */
+	inputs: null,
 	/** 
 	 * @private
 	 * @method
@@ -64,6 +69,23 @@ nyc.Radio.prototype = {
 	 */
 	val: function(){
 		return this.value;
+	},
+	/** 
+	 * Enable/disable a radio button
+	 * @export
+	 * @method
+	 * @param {string} value
+	 * @param {boolean} enabled
+	 */
+	disabled: function(value, disabled){
+		var choiceIndex;
+		$.each(this.choices, function(i, choice){
+			if (choice.value == value){
+				choiceIndex = i;
+				return;
+			}
+		});
+		$(this.inputs[choiceIndex]).prop('disabled', disabled).checkboxradio('refresh');
 	}
 };
 
