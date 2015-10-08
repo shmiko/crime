@@ -377,20 +377,6 @@ nyc.App.prototype = {
 		date.setFullYear(date.getFullYear() + yearOffset);
 		return date;
 	},
-	/** 
-	 * @private 
-	 * @method
-	 * @param {Array<Object>} yearOffset
-	 */
-	appendLocationFilters: function(filterValues){
-		if (this.location){
-			filterValues.pct = {pct: this.precinct};
-			filterValues.boro = {boro: this.boro};
-			filterValues.boroName = {
-				boroName: {'1': 'Manhattan', '2': 'Bronx', '3': 'Brooklyn', '4': 'Queens', '5': 'Staten Isl.'}[this.boro]
-			};
-		}		
-	},
 	/**
 	 * @private
 	 * @method
@@ -398,11 +384,18 @@ nyc.App.prototype = {
 	updateView: function(){
 		var filters = this.filters();
 		$('#spinner').show();
-		$('#ui-id-10').prop('disabled', this.mapType.val() != 'precinct').checkboxradio('refresh');
-		$('#ui-id-2, #ui-id-3').prop('disabled', this.crimeType.val() == 'RAPE').checkboxradio('refresh');
+		this.disableChoices();		
 		this.viewSwitcher.switchView(this.mapType.val(), filters.filterValues, filters.descriptionValues);
 		this.updatePrecinctChart();		
 		this.updateSummaryChart();
+	},
+	/**
+	 * @private
+	 * @method
+	 */
+	disableChoices: function(){
+		$('#ui-id-10').prop('disabled', this.mapType.val() != 'precinct').checkboxradio('refresh');
+		$('#ui-id-2, #ui-id-3').prop('disabled', this.crimeType.val() == 'RAPE').checkboxradio('refresh');		
 	},
 	/** 
 	 * @private 
