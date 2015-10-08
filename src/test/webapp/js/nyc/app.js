@@ -2,6 +2,30 @@ QUnit.module('nyc.App', {
 	beforeEach: function(assert){
 		setup(assert, this);
 		var hooks = this;
+		
+		this.MOCK_MAP = {
+			removedLayer: null,
+			bounds: null,
+			coordinates: null,
+			zoom: null,
+			options: null,
+			panBy: function(args){
+				assert.equal(args[0], 0);
+				assert.equal(args[1], -20);
+			},
+			removeLayer: function(layer){
+				this.removedLayer = layer;
+			},
+			fitBounds: function(bnds){
+				this.bounds = bnds;
+			},
+			setView: function(coords, zoom, opts){
+				this.coordinates = coords;
+				this.zoom = zoom;
+				this.options = opts;
+			}
+		};
+
 		MockViewSwitcher = function(){};
 		MockViewSwitcher.prototype = {
 			views: {
@@ -16,6 +40,20 @@ QUnit.module('nyc.App', {
 		nyc.inherits(MockViewSwitcher, nyc.EventHandling);
 		this.MOCK_VIEW_SWITCHER = new MockViewSwitcher();
 		
+		var MockControls = function(){};
+		MockControls.prototype = {
+			searching: function(bool){
+				assert.notOk(bool);
+			}
+		};
+		nyc.inherits(MockControls, nyc.EventHandling);
+		this.MOCK_CONTROLS = new MockControls();
+
+		var MockLocate = function(){};
+		MockLocate.prototype = {};
+		nyc.inherits(MockLocate, nyc.EventHandling);
+		this.MOCK_LOCATE = new MockLocate();
+
 		this.MOCK_DAO = {
 			resultData: null,
 			filters: null,
@@ -28,6 +66,8 @@ QUnit.module('nyc.App', {
 	afterEach: function(assert){
 		teardown(assert, this);
 		delete this.MOCK_VIEW_SWITCHER;
+		delete this.MOCK_CONTROLS;
+		delete this.MOCK_LOCATE;
 		delete this.MOCK_DAO;
 	}	
 });
@@ -46,9 +86,10 @@ QUnit.test('drillDownLink', function(assert){
 	var btn = $('div.cartodb-popup.v2 .cartodb-popup-content .crime-count');
 	
 	var app = new nyc.App({
+		map: this.MOCK_MAP,
 		viewSwitcher: this.MOCK_VIEW_SWITCHER,
-		locate: new nyc.EventHandling(),
-		controls: new nyc.EventHandling(),
+		locate: this.MOCK_LOCATE,
+		controls: this.MOCK_CONTROLS,
 		mapType: new nyc.EventHandling(),
 		crimeType: new nyc.EventHandling(), 
 		dateRange: new nyc.EventHandling()
@@ -84,9 +125,10 @@ QUnit.test('drillDownLink (click first time)', function(assert){
 	var btn = $('div.cartodb-popup.v2 .cartodb-popup-content .crime-count');
 	
 	var app = new nyc.App({
+		map: this.MOCK_MAP,
 		viewSwitcher: this.MOCK_VIEW_SWITCHER,
-		locate: new nyc.EventHandling(),
-		controls: new nyc.EventHandling(),
+		locate: this.MOCK_LOCATE,
+		controls: this.MOCK_CONTROLS,
 		mapType: new nyc.EventHandling(),
 		crimeType: new nyc.EventHandling(), 
 		dateRange: new nyc.EventHandling()
@@ -126,9 +168,10 @@ QUnit.test('drillDownLink (click again)', function(assert){
 	var btn = $('div.cartodb-popup.v2 .cartodb-popup-content .crime-count');
 	
 	var app = new nyc.App({
+		map: this.MOCK_MAP,
 		viewSwitcher: this.MOCK_VIEW_SWITCHER,
-		locate: new nyc.EventHandling(),
-		controls: new nyc.EventHandling(),
+		locate: this.MOCK_LOCATE,
+		controls: this.MOCK_CONTROLS,
 		mapType: new nyc.EventHandling(),
 		crimeType: new nyc.EventHandling(), 
 		dateRange: new nyc.EventHandling()
@@ -174,9 +217,10 @@ QUnit.test('drillDown (precint view)', function(assert){
 	this.MOCK_DAO.resultData = {rows: rows};
 	
 	var app = new nyc.App({
+		map: this.MOCK_MAP,
 		viewSwitcher: this.MOCK_VIEW_SWITCHER,
-		locate: new nyc.EventHandling(),
-		controls: new nyc.EventHandling(),
+		locate: this.MOCK_LOCATE,
+		controls: this.MOCK_CONTROLS,
 		mapType: new nyc.EventHandling(),
 		crimeType: new nyc.EventHandling(), 
 		dateRange: new nyc.EventHandling(),
@@ -224,9 +268,10 @@ QUnit.test('drillDown (location view)', function(assert){
 	this.MOCK_DAO.resultData = {rows: rows};
 	
 	var app = new nyc.App({
+		map: this.MOCK_MAP,
 		viewSwitcher: this.MOCK_VIEW_SWITCHER,
-		locate: new nyc.EventHandling(),
-		controls: new nyc.EventHandling(),
+		locate: this.MOCK_LOCATE,
+		controls: this.MOCK_CONTROLS,
 		mapType: new nyc.EventHandling(),
 		crimeType: new nyc.EventHandling(), 
 		dateRange: new nyc.EventHandling(),
@@ -270,9 +315,10 @@ QUnit.test('hideAllChart', function(assert){
 	$('body').append(div);
 
 	var app = new nyc.App({
+		map: this.MOCK_MAP,
 		viewSwitcher: this.MOCK_VIEW_SWITCHER,
-		locate: new nyc.EventHandling(),
-		controls: new nyc.EventHandling(),
+		locate: this.MOCK_LOCATE,
+		controls: this.MOCK_CONTROLS,
 		mapType: new nyc.EventHandling(),
 		crimeType: new nyc.EventHandling(), 
 		dateRange: new nyc.EventHandling()
@@ -303,9 +349,10 @@ QUnit.test('toggle', function(assert){
 	$('body').append(panel);
 
 	var app = new nyc.App({
+		map: this.MOCK_MAP,
 		viewSwitcher: this.MOCK_VIEW_SWITCHER,
-		locate: new nyc.EventHandling(),
-		controls: new nyc.EventHandling(),
+		locate: this.MOCK_LOCATE,
+		controls: this.MOCK_CONTROLS,
 		mapType: new nyc.EventHandling(),
 		crimeType: new nyc.EventHandling(), 
 		dateRange: new nyc.EventHandling()
@@ -341,21 +388,14 @@ QUnit.test('panPopup', function(assert){
 		assert.ok(true);
 	};
 
-	var mockMap = {
-		panBy: function(args){
-			assert.equal(args[0], 0);
-			assert.equal(args[1], -20);
-		}
-	};
-
 	var infowin = $('<div class="cartodb-infowindow" style="position:fixed;top:-10px;"><div class="cartodb-popup v2"><div class="cartodb-popup-content"><a class="crime-count"></a><ul class="crime-count-type"></ul></div></div></div>');
 	$('body').append(infowin);
 
 	var app = new nyc.App({
-		map: mockMap,
+		map: this.MOCK_MAP,
 		viewSwitcher: this.MOCK_VIEW_SWITCHER,
-		locate: new nyc.EventHandling(),
-		controls: new nyc.EventHandling(),
+		locate: this.MOCK_LOCATE,
+		controls: this.MOCK_CONTROLS,
 		mapType: new nyc.EventHandling(),
 		crimeType: new nyc.EventHandling(), 
 		dateRange: new nyc.EventHandling()
@@ -363,7 +403,7 @@ QUnit.test('panPopup', function(assert){
 
 	app.panPopup(); //pan map because popup is above top
 	
-	mockMap.panBy = function(args){
+	this.MOCK_MAP.panBy = function(args){
 		assert.notOk(true);
 	};
 	infowin.css('top', '20px');
@@ -387,9 +427,10 @@ QUnit.test('ambiguous (possible)', function(assert){
 	};
 
 	var app = new nyc.App({
+		map: this.MOCK_MAP,
 		viewSwitcher: this.MOCK_VIEW_SWITCHER,
-		locate: new nyc.EventHandling(),
-		controls: new nyc.EventHandling(),
+		locate: this.MOCK_LOCATE,
+		controls: this.MOCK_CONTROLS,
 		mapType: new nyc.EventHandling(),
 		crimeType: new nyc.EventHandling(), 
 		dateRange: new nyc.EventHandling()
@@ -428,19 +469,12 @@ QUnit.test('ambiguous (bad input)', function(assert){
 	nyc.App.prototype.updateView = function(){
 		assert.ok(true);
 	};
-
-	var MockControls = function(){};
-	MockControls.prototype = {
-		searching: function(bool){
-			assert.notOk(bool);
-		}
-	};
-	nyc.inherits(MockControls, nyc.EventHandling);
 	
 	var app = new nyc.App({
+		map: this.MOCK_MAP,
 		viewSwitcher: this.MOCK_VIEW_SWITCHER,
-		locate: new nyc.EventHandling(),
-		controls: new MockControls(),
+		locate: this.MOCK_LOCATE,
+		controls: this.MOCK_CONTROLS,
 		mapType: new nyc.EventHandling(),
 		crimeType: new nyc.EventHandling(), 
 		dateRange: new nyc.EventHandling()
@@ -467,9 +501,10 @@ QUnit.test('currentPrecinct (precinct != null, boro != null)', function(assert){
 	};
 
 	var app = new nyc.App({
+		map: this.MOCK_MAP,
 		viewSwitcher: this.MOCK_VIEW_SWITCHER,
-		locate: new nyc.EventHandling(),
-		controls: new nyc.EventHandling(),
+		locate: this.MOCK_LOCATE,
+		controls: this.MOCK_CONTROLS,
 		mapType: new nyc.EventHandling(),
 		crimeType: new nyc.EventHandling(), 
 		dateRange: new nyc.EventHandling()
@@ -494,5 +529,286 @@ QUnit.test('currentPrecinct (precinct != null, boro != null)', function(assert){
 	assert.equal(app.precinct, 2);
 	assert.equal(app.boro, 1);
 	
+	nyc.App.prototype.updateView = updateView;
+});
+
+QUnit.test('currentPrecinct (precinct = null, boro != null)', function(assert){
+	assert.expect(5);
+
+	var updateView = nyc.App.prototype.updateView;
+	nyc.App.prototype.updateView = function(){
+		assert.ok(true);
+	};
+
+	this.MOCK_DAO.resultData = {rows: [{pct: 2, boro: 1}]};
+	
+	var app = new nyc.App({
+		map: this.MOCK_MAP,
+		viewSwitcher: this.MOCK_VIEW_SWITCHER,
+		locate: this.MOCK_LOCATE,
+		controls: this.MOCK_CONTROLS,
+		mapType: new nyc.EventHandling(),
+		crimeType: new nyc.EventHandling(), 
+		dateRange: new nyc.EventHandling(),
+		locationInfo: this.MOCK_DAO
+	});	
+	app.updateSummaryChart = function(){
+		assert.ok(true);
+	};
+	app.location = {coordinates: [1, 2]};
+	
+	app.currentPrecinct({boro: 1});
+	
+	assert.equal(app.precinct, 2);
+	assert.equal(app.boro, 1);
+	assert.deepEqual(this.MOCK_DAO.filters, {location: {lng: 1, lat: 2}});
+
+	nyc.App.prototype.updateView = updateView;
+});
+
+QUnit.test('currentPrecinct (precinct != null, boro = null)', function(assert){
+	assert.expect(5);
+
+	var updateView = nyc.App.prototype.updateView;
+	nyc.App.prototype.updateView = function(){
+		assert.ok(true);
+	};
+
+	this.MOCK_DAO.resultData = {rows: [{pct: 2, boro: 1}]};
+	
+	var app = new nyc.App({
+		map: this.MOCK_MAP,
+		viewSwitcher: this.MOCK_VIEW_SWITCHER,
+		locate: this.MOCK_LOCATE,
+		controls: this.MOCK_CONTROLS,
+		mapType: new nyc.EventHandling(),
+		crimeType: new nyc.EventHandling(), 
+		dateRange: new nyc.EventHandling(),
+		locationInfo: this.MOCK_DAO
+	});	
+	app.updateSummaryChart = function(){
+		assert.ok(true);
+	};
+	app.location = {coordinates: [1, 2]};
+	
+	app.currentPrecinct({pct: 2});
+	
+	assert.equal(app.precinct, 2);
+	assert.equal(app.boro, 1);
+	assert.deepEqual(this.MOCK_DAO.filters, {location: {lng: 1, lat: 2}});
+
+	nyc.App.prototype.updateView = updateView;
+});
+
+QUnit.test('currentPrecinct (no chart)', function(assert){
+	assert.expect(5);
+
+	var div = $('<div id="chart-sum"></div>');
+	$('body').append(div);
+	
+	var updateView = nyc.App.prototype.updateView;
+	nyc.App.prototype.updateView = function(){
+		assert.ok(true);
+	};
+
+	this.MOCK_DAO.resultData = {rows: []};
+	
+	var app = new nyc.App({
+		map: this.MOCK_MAP,
+		viewSwitcher: this.MOCK_VIEW_SWITCHER,
+		locate: this.MOCK_LOCATE,
+		controls: this.MOCK_CONTROLS,
+		mapType: new nyc.EventHandling(),
+		crimeType: new nyc.EventHandling(), 
+		dateRange: new nyc.EventHandling(),
+		locationInfo: this.MOCK_DAO
+	});	
+	app.updateSummaryChart = function(){
+		assert.notOk(true);
+	};
+	app.location = {coordinates: [1, 2]};
+	
+	app.currentPrecinct({pct: 2});
+	
+	assert.equal(app.precinct, 2);
+	assert.notOk(app.boro);
+	assert.ok(div.hasClass('chart-none'));
+	assert.deepEqual(this.MOCK_DAO.filters, {location: {lng: 1, lat: 2}});
+
+	nyc.App.prototype.updateView = updateView;
+	div.remove();
+});
+
+QUnit.test('located (nyc.Locate.LocateEventType.GEOLOCATION, coordiantes != null, locationLayer = null)', function(assert){
+	assert.expect(5);
+
+	var updateView = nyc.App.prototype.updateView;
+	nyc.App.prototype.updateView = function(){
+		assert.ok(true);
+	};
+
+	var locationData = {coordinates: [1, 2], data: 'mockData'};
+	
+	var app = new nyc.App({
+		map: this.MOCK_MAP,
+		viewSwitcher: this.MOCK_VIEW_SWITCHER,
+		locate: this.MOCK_LOCATE,
+		controls: this.MOCK_CONTROLS,
+		mapType: new nyc.EventHandling(),
+		crimeType: new nyc.EventHandling(), 
+		dateRange: new nyc.EventHandling(),
+		locationInfo: this.MOCK_DAO
+	});	
+	app.locatedCoords = function(data){
+		assert.deepEqual(data, locationData);
+	};
+	app.locatedGeoJson = function(data){
+		assert.notOk(true);
+	};
+	app.currentPrecinct = function(data){
+		assert.equal(data, locationData.data);
+	};
+
+	this.MOCK_LOCATE.trigger(nyc.Locate.LocateEventType.GEOLOCATION, locationData);
+	
+	assert.notOk(this.MOCK_MAP.removedLayer);
+	
+	nyc.App.prototype.updateView = updateView;
+});
+
+QUnit.test('located (nyc.Locate.LocateEventType.GEOCODE, coordiantes = null, locationLayer != null)', function(assert){
+	assert.expect(5);
+
+	var updateView = nyc.App.prototype.updateView;
+	nyc.App.prototype.updateView = function(){
+		assert.ok(true);
+	};
+
+	var locationData = {data: 'mockData'};
+	
+	var app = new nyc.App({
+		map: this.MOCK_MAP,
+		viewSwitcher: this.MOCK_VIEW_SWITCHER,
+		locate: this.MOCK_LOCATE,
+		controls: this.MOCK_CONTROLS,
+		mapType: new nyc.EventHandling(),
+		crimeType: new nyc.EventHandling(), 
+		dateRange: new nyc.EventHandling(),
+		locationInfo: this.MOCK_DAO
+	});
+	app.locationLayer = 'mockLayer';
+	app.locatedCoords = function(data){
+		assert.notOk(true);
+	};
+	app.locatedGeoJson = function(data){
+		assert.deepEqual(data, locationData);
+	};
+	app.currentPrecinct = function(data){
+		assert.equal(data, locationData.data);
+	};
+
+	this.MOCK_LOCATE.trigger(nyc.Locate.LocateEventType.GEOLOCATION, locationData);
+	
+	assert.equal(this.MOCK_MAP.removedLayer, 'mockLayer');
+
+	nyc.App.prototype.updateView = updateView;
+});
+
+QUnit.test('locatedGeoJson', function(assert){
+	assert.expect(5);
+
+	var updateView = nyc.App.prototype.updateView;
+	nyc.App.prototype.updateView = function(){
+		assert.ok(true);
+	};
+
+	var locationData = {data: 'mockData'};
+	
+	var app = new nyc.App({
+		map: this.MOCK_MAP,
+		viewSwitcher: this.MOCK_VIEW_SWITCHER,
+		locate: this.MOCK_LOCATE,
+		controls: this.MOCK_CONTROLS,
+		mapType: new nyc.EventHandling(),
+		crimeType: new nyc.EventHandling(), 
+		dateRange: new nyc.EventHandling(),
+		locationInfo: this.MOCK_DAO
+	});
+
+	var geoJson = L.geoJson;
+	L.geoJson = function(geoJson, opts){
+		return {
+			geoJson: geoJson,
+			options: opts,
+			addTo: function(map){
+				assert.deepEqual(app.map, map);
+				return this;
+			},
+			getBounds: function(){
+				return 'mockBounds';
+			}
+		}
+	};
+	
+	var geoJsonData = {geoJsonGeometry: 'mockGeoJsonGeometry'};
+	
+	app.locatedGeoJson(geoJsonData);
+	
+	assert.deepEqual(app.locationLayer.geoJson, {type: 'Feature', geometry: geoJsonData.geoJsonGeometry});
+	assert.deepEqual(app.locationLayer.options.style(), {weight: 10, color: 'black', fill: false});
+	assert.equal(app.map.bounds, 'mockBounds');
+	
+	L.geoJson = geoJson;
+	nyc.App.prototype.updateView = updateView;
+});
+
+QUnit.test('locatedCoords', function(assert){
+	assert.expect(7);
+
+	var updateView = nyc.App.prototype.updateView;
+	nyc.App.prototype.updateView = function(){
+		assert.ok(true);
+	};
+
+	var locationData = {data: 'mockData'};
+	
+	var app = new nyc.App({
+		map: this.MOCK_MAP,
+		viewSwitcher: this.MOCK_VIEW_SWITCHER,
+		locate: this.MOCK_LOCATE,
+		controls: this.MOCK_CONTROLS,
+		mapType: new nyc.EventHandling(),
+		crimeType: new nyc.EventHandling(), 
+		dateRange: new nyc.EventHandling(),
+		locationInfo: this.MOCK_DAO
+	});
+
+	var marker = L.marker;
+	L.marker = function(coords, opts){
+		return {
+			coords: coords,
+			options: opts,
+			addTo: function(map){
+				assert.deepEqual(app.map, map);
+				return this;
+			},
+			getBounds: function(){
+				return 'mockBounds';
+			}
+		}
+	};
+	
+	var coordsData = {coordinates: [1, 2], name: 'fred'};
+	
+	app.locatedCoords(coordsData);
+	
+	assert.deepEqual(app.locationLayer.coords, [2, 1]);
+	assert.deepEqual(app.locationLayer.options, {icon: app.icon, title: coordsData.name});
+	
+	assert.deepEqual(app.map.coordinates, [2, 1]);
+	assert.equal(app.map.zoom, nyc.leaf.Locate.ZOOM_LEVEL);
+	assert.deepEqual(app.map.options, {pan: {animate: true}, zoom: {animate: true}});
+	
+	L.marker = marker;
 	nyc.App.prototype.updateView = updateView;
 });
