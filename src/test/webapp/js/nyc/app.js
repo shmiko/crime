@@ -457,3 +457,42 @@ QUnit.test('ambiguous (bad input)', function(assert){
 
 	nyc.App.prototype.updateView = updateView;
 });
+
+QUnit.test('currentPrecinct (precinct != null, boro != null)', function(assert){
+	assert.expect(10);
+
+	var updateView = nyc.App.prototype.updateView;
+	nyc.App.prototype.updateView = function(){
+		assert.ok(true);
+	};
+
+	var app = new nyc.App({
+		viewSwitcher: this.MOCK_VIEW_SWITCHER,
+		locate: new nyc.EventHandling(),
+		controls: new nyc.EventHandling(),
+		mapType: new nyc.EventHandling(),
+		crimeType: new nyc.EventHandling(), 
+		dateRange: new nyc.EventHandling()
+	});	
+	app.updateSummaryChart = function(){
+		assert.ok(true);
+	};
+	app.location = {coordinates: [1, 2]};
+	
+	app.currentPrecinct({pct: 2, boro: 1});
+	
+	assert.equal(app.precinct, 2);
+	assert.equal(app.boro, 1);
+	
+	app.currentPrecinct({policePrecinct: 2, boroughCode1In: 1});
+	
+	assert.equal(app.precinct, 2);
+	assert.equal(app.boro, 1);
+	
+	app.currentPrecinct({leftSegmentPolicePrecinct: 2, boroughCode1In: 1});
+	
+	assert.equal(app.precinct, 2);
+	assert.equal(app.boro, 1);
+	
+	nyc.App.prototype.updateView = updateView;
+});
