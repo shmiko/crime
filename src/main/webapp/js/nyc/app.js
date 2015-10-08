@@ -394,8 +394,10 @@ nyc.App.prototype = {
 	 * @method
 	 */
 	disableChoices: function(){
-		$('#ui-id-10').prop('disabled', this.mapType.val() != 'precinct').checkboxradio('refresh');
-		$('#ui-id-2, #ui-id-3').prop('disabled', this.crimeType.val() == 'RAPE').checkboxradio('refresh');		
+		var disabled = this.crimeType.val() == 'RAPE';
+		this.mapType.disabled('location', disabled);
+		this.mapType.disabled('heat', disabled);
+		this.crimeType.disabled('RAPE', this.mapType.val() != 'precinct');
 	},
 	/** 
 	 * @private 

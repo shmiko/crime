@@ -915,26 +915,13 @@ QUnit.test('secondSeries', function(assert){
 QUnit.test('date', function(assert){
 	assert.expect(3);
 	
-	var app = new nyc.App({
-		map: this.MOCK_MAP,
-		viewSwitcher: this.MOCK_VIEW_SWITCHER,
-		locate: this.MOCK_LOCATE,
-		controls: this.MOCK_CONTROLS,
-		mapType: this.MOCK_MAP_TYPE,
-		crimeType: this.MOCK_CRIME_TYPE, 
-		dateRange: this.MOCK_DATE_RANGE,
-		precinctChart: this.MOCK_PRECINCT_CHART,
-		summaryChart: this.MOCK_SUMMARY_CHART,
-		locationInfo: this.MOCK_LOCATION_DAO
-	});
+	var app = this.TEST_APP;
 
 	assert.deepEqual(app.date(new Date('2014-01-01T05:00:00.000Z')), new Date('2014-01-01T05:00:00.000Z'));
 	assert.deepEqual(app.date(new Date('2014-01-01T05:00:00.000Z'), 1), new Date('2015-01-01T05:00:00.000Z'));
 	assert.deepEqual(app.date(new Date('2014-01-01T05:00:00.000Z'), -1), new Date('2013-01-01T05:00:00.000Z'));
 });
 
-/*
-	
 QUnit.test('updateView', function(assert){
 	assert.expect(7);
 
@@ -970,7 +957,8 @@ QUnit.test('updateView', function(assert){
 		dateRange: this.MOCK_DATE_RANGE,
 		precinctChart: this.MOCK_PRECINCT_CHART,
 		summaryChart: this.MOCK_SUMMARY_CHART,
-		locationInfo: this.MOCK_LOCATION_DAO
+		locationInfo: this.MOCK_LOCATION_DAO,
+		crimeDrillDown: this.MOCK_DRILLDOWN_DAO
 	});
 	
 	assert.equal(spinner.css('display'), 'block');
@@ -985,6 +973,7 @@ QUnit.test('updateView', function(assert){
 	spinner.remove();
 });
 
+/*
 QUnit.test('disableChoices (mapType = "precinct", crimeType = "RAPE")', function(assert){
 	assert.expect(4);
 	
@@ -1013,5 +1002,4 @@ QUnit.test('disableChoices (mapType = "precinct", crimeType = "RAPE")', function
 
 	radios.remove();
 });
-
 */
