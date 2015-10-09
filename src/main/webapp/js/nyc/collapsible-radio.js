@@ -74,13 +74,13 @@ nyc.Radio.prototype = {
 	 * Enable/disable a radio button
 	 * @export
 	 * @method
-	 * @param {string} value
+	 * @param {string} choiceValue
 	 * @param {boolean} enabled
 	 */
-	disabled: function(value, disabled){
+	disabled: function(choiceValue, disabled){
 		var choiceIndex;
 		$.each(this.choices, function(i, choice){
-			if (choice.value == value){
+			if (choice.value == choiceValue){
 				choiceIndex = i;
 				return;
 			}
