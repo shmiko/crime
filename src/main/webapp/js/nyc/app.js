@@ -19,6 +19,7 @@ window.nyc = window.nyc || {};
  * @property {nyc.Chart} summaryChart
  * @property {nyc.carto.Dao} locationInfo
  * @property {nyc.carto.Dao} crimeDrillDown
+ * @property {Object<string, string>=} boroughNames
  */
 nyc.AppOptions;
 
@@ -42,6 +43,7 @@ nyc.App = function(options){
 	me.summaryChart = options.summaryChart;
 	me.locationInfo = options.locationInfo;
 	me.crimeDrillDown = options.crimeDrillDown;
+	me.boroughNames = options.boroughNames || me.boroughNames;
 	
 	me.viewSwitcher.views.location.layer.infowindow.set({maxHeight: "none", sanitizeTemplate: false});
 	me.viewSwitcher.views.precinct.layer.infowindow.set({maxHeight: "none", sanitizeTemplate: false});
@@ -76,6 +78,11 @@ nyc.App = function(options){
 };
 
 nyc.App.prototype = {
+	/**
+	 * @private
+	 * @member {Object<string, string>}
+	 */
+	boroughNames: {'1': 'Manhattan', '2': 'Bronx', '3': 'Brooklyn', '4': 'Queens', '5': 'Staten Isl.'}
 	/**
 	 * @private
 	 * @member {nyc.Locate.LocateResult}
@@ -322,7 +329,7 @@ nyc.App.prototype = {
 			filterValues.pct = {pct: this.precinct};
 			filterValues.boro = {boro: this.boro};
 			filterValues.boroName = {
-				boroName: {'1': 'Manhattan', '2': 'Bronx', '3': 'Brooklyn', '4': 'Queens', '5': 'Staten Isl.'}[this.boro]
+				boroName: this.boroughNames[this.boro]
 			};
 		}		
 	},
