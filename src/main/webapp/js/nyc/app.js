@@ -82,7 +82,7 @@ nyc.App.prototype = {
 	 * @private
 	 * @member {Object<string, string>}
 	 */
-	boroughNames: {'1': 'Manhattan', '2': 'Bronx', '3': 'Brooklyn', '4': 'Queens', '5': 'Staten Isl.'}
+	boroughNames: {'1': 'Manhattan', '2': 'Bronx', '3': 'Brooklyn', '4': 'Queens', '5': 'Staten Isl.'},
 	/**
 	 * @private
 	 * @member {nyc.Locate.LocateResult}
