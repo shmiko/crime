@@ -79,6 +79,10 @@ QUnit.module('nyc.App', {
 			returnVal: null,
 			val: function(){
 				return this.returnVal;
+			},
+			disabled: function(choiceValue, disabled){
+				this[choiceValue] = {};
+				this[choiceValue].disabled = disabled;
 			}
 		};
 		nyc.inherits(MockRadio, nyc.EventHandling);
@@ -99,10 +103,10 @@ QUnit.module('nyc.App', {
 				this.descriptionValues = descriptionValues;
 			}
 		};
-		this.MOCK_SUARY_CHART = new MockChart();
+		this.MOCK_SUMMARY_CHART = new MockChart();
 		this.MOCK_PRECINCT_CHART = new MockChart();
 		
-		this.CHART_ALL = $('<div id="chart-all"></div>');
+		this.CHART_ALL = $('<div id="chart-all"><div class="chart-title"></div></div>');
 		$('body').append(this.CHART_ALL);
 
 		this.TOGGLE_BTN = $('<div id="btn-toggle" class="btn-map"></div>');
@@ -973,33 +977,207 @@ QUnit.test('updateView', function(assert){
 	spinner.remove();
 });
 
-/*
-QUnit.test('disableChoices (mapType = "precinct", crimeType = "RAPE")', function(assert){
-	assert.expect(4);
+QUnit.test('disableChoices', function(assert){
+	assert.expect(6);
 	
-	var radios = $('<input id="ui-id-2"><input id="ui-id-3"><input id="ui-id-10">');
-	$('body').append(radios);
-	
-	var app = new nyc.App({
-		map: this.MOCK_MAP,
-		viewSwitcher: this.MOCK_VIEW_SWITCHER,
-		locate: this.MOCK_LOCATE,
-		controls: this.MOCK_CONTROLS,
-		mapType: this.MOCK_MAP_TYPE,
-		crimeType: this.MOCK_CRIME_TYPE, 
-		dateRange: this.MOCK_DATE_RANGE,
-		precinctChart: this.MOCK_PRECINCT_CHART,
-		summaryChart: this.MOCK_SUMMARY_CHART,
-		locationInfo: this.MOCK_LOCATION_DAO
-	});
+	var app = this.TEST_APP;
 
 	this.MOCK_MAP_TYPE.returnVal = 'precinct';
 	this.MOCK_CRIME_TYPE.returnVal = 'RAPE';
 
-	assert.notOk($('#ui-id-10').prop('disabled'));
-	assert.ok($('#ui-id-2').prop('disabled'));
-	assert.ok($('#ui-id-3').prop('disabled'));
+	app.disableChoices();
+	
+	assert.ok(this.MOCK_MAP_TYPE.location.disabled);
+	assert.ok(this.MOCK_MAP_TYPE.heat.disabled);
+	assert.notOk(this.MOCK_CRIME_TYPE.RAPE.disabled);
+	
+	this.MOCK_MAP_TYPE.returnVal = 'heat';
+	this.MOCK_CRIME_TYPE.returnVal = 'ROBBERY';
 
-	radios.remove();
+	app.disableChoices();
+
+	assert.notOk(this.MOCK_MAP_TYPE.location.disabled);
+	assert.notOk(this.MOCK_MAP_TYPE.heat.disabled);
+	assert.ok(this.MOCK_CRIME_TYPE.RAPE.disabled);
 });
-*/
+
+QUnit.test('updateLegend', function(assert){
+	assert.expect(3);
+	
+	var done = assert.async();
+	
+	var spinner = $('<div id="spinner" style="display:block"></div>');
+	$('body').append(spinner);
+	var legend = $('<div id="legend"></div>');
+	$('body').append(legend);
+	var firstload = $('<div id="first-load" style="display:block"></div>');
+	$('body').append(firstload);
+
+	var app = this.TEST_APP;
+	app.updateLegend('legend-html');
+
+	setTimeout(function(){
+		assert.equal(spinner.css('display'), 'none');
+		assert.equal(legend.html(), 'legend-html');
+		assert.equal(firstload.css('display'), 'none');
+		spinner.remove();
+		legend.remove();
+		firstload.remove();
+		done();
+	}, 1000);
+
+});
+
+QUnit.test('updateSummaryChart', function(assert){
+	assert.expect(12);
+		
+	var chart = $('<div id="chart-sum" class="chart-none" style="display:block"><div class="chart-title"></div></div>');
+	$('body').append(chart);
+
+	var app = this.TEST_APP;
+	app.chartFilters = function(){
+		assert.notOk(true);
+	};
+	
+	app.updateSummaryChart();
+
+	assert.ok(chart.hasClass('chart-none'));
+	assert.notOk(this.MOCK_SUMMARY_CHART.filterValuesArray);
+	assert.notOk(this.MOCK_SUMMARY_CHART.descriptionValues);
+	assert.notOk(this.MOCK_SUMMARY_CHART.titleNode);
+
+	chart.show();
+	
+	app.updateSummaryChart();
+
+	assert.ok(chart.hasClass('chart-none'));
+	assert.notOk(this.MOCK_SUMMARY_CHART.filterValuesArray);
+	assert.notOk(this.MOCK_SUMMARY_CHART.descriptionValues);
+	assert.notOk(this.MOCK_SUMMARY_CHART.titleNode);
+	
+	app.location = {};
+	app.chartFilters = function(){
+		return {filterValues: 'mockFilterValues', descriptionValues: 'mockDescriptionValues'};
+	};
+
+	app.updateSummaryChart();
+
+	assert.notOk(chart.hasClass('chart-none'));
+	assert.equal(this.MOCK_SUMMARY_CHART.filterValuesArray, 'mockFilterValues');
+	assert.equal(this.MOCK_SUMMARY_CHART.descriptionValues, 'mockDescriptionValues');
+	assert.deepEqual(this.MOCK_SUMMARY_CHART.titleNode, $('#chart-sum .chart-title'));
+	
+	chart.remove();
+});
+
+QUnit.test('showPrecinctChart', function(assert){
+	assert.expect(3);
+		
+	var done = assert.async();
+	
+	var chart = this.CHART_ALL;
+	chart.css({position: 'fixed', width: '200px', left: '500px', bottom: '0'});
+
+	var app = this.TEST_APP;
+	app.updatePrecinctChart = function(){
+		assert.ok(true);
+	};
+	
+	app.showPrecinctChart();
+
+	setTimeout(function(){
+		assert.equal(chart.position().left, 0);
+		done();
+	}, 1000);
+});
+
+QUnit.test('updatePrecinctChart', function(assert){
+	assert.expect(6);
+			
+	var chart = this.CHART_ALL;
+	chart.css({position: 'fixed', width: '200px', left: '5000px', bottom: '0'});
+		
+	var app = this.TEST_APP;
+	app.chartFilters = function(){
+		assert.notOk(true);
+	};
+
+	delete this.MOCK_PRECINCT_CHART.filterValuesArray;
+	delete this.MOCK_PRECINCT_CHART.descriptionValues;
+	delete this.MOCK_PRECINCT_CHART.titleNode;
+
+	app.updatePrecinctChart();
+
+	assert.notOk(this.MOCK_PRECINCT_CHART.filterValuesArray);
+	assert.notOk(this.MOCK_PRECINCT_CHART.descriptionValues);
+	assert.notOk(this.MOCK_PRECINCT_CHART.titleNode);
+	
+	chart.css('left', '0');
+	app.chartFilters = function(){
+		return {filterValues: 'mockFilterValues', descriptionValues: 'mockDescriptionValues'};
+	};
+	
+	app.updatePrecinctChart();
+
+	assert.equal(this.MOCK_PRECINCT_CHART.filterValuesArray, 'mockFilterValues');
+	assert.equal(this.MOCK_PRECINCT_CHART.descriptionValues, 'mockDescriptionValues');
+	assert.deepEqual(this.MOCK_PRECINCT_CHART.titleNode, $('#chart-all .chart-title'));
+});
+
+QUnit.test('error', function(assert){
+	assert.expect(4);
+	
+	var done = assert.async();
+			
+	var alert = $('<div id="alert" style="display:none;"><div class="alert-msg"></div><button></button></div>');
+	$('body').append(alert);
+
+	var app = this.TEST_APP;
+	
+	app.error('error');
+
+	setTimeout(function(){
+		assert.equal($('#alert .alert-msg').html(), 'error');
+		assert.equal($('#alert').css('display'), 'block');
+		assert.ok($(':focus').get(0).isSameNode($('#alert button').get(0)));
+		done();
+		alert.remove();
+	}, 1000);
+});
+
+QUnit.test('hideTip', function(assert){
+	assert.expect(3);
+			
+	var map = $('<div id="map"><div></div></div>');
+	var pop = $('<div class="cartodb-popup"><div></div></div>');
+	var tip = $('<div class="cartodb-tooltip"></div>');
+	var other = $('<div></div>');
+	$('body').append(map);
+	map.append(pop);
+	$('body').append(tip);
+
+	var app = this.TEST_APP;
+	
+	app.hideTip({target: other.get(0)});
+
+	assert.equal(tip.css('display'), 'none');
+	
+	tip.show();
+
+	app.hideTip({target: map.children().get(0)});
+
+	assert.equal(tip.css('display'), 'block');
+	
+	app.hideTip({target: pop.children().get(0)});
+
+	assert.equal(tip.css('display'), 'none');
+	
+	map.remove();
+	pop.remove();
+	tip.remove();
+	other.remove();
+});
+
+
+
+
