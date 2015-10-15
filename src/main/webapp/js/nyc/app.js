@@ -432,8 +432,11 @@ nyc.App.prototype = {
 	 * @method
 	 */
 	showPrecinctChart: function(){
-		this.updatePrecinctChart();		
-		$('#chart-all').animate({left: 0}, $.proxy(this.updatePrecinctChart, this));
+		var chart = $('#chart-all');
+		this.updatePrecinctChart();
+		if (chart.position().left > 0){
+			chart.animate({left: 0}, $.proxy(this.updatePrecinctChart, this));
+		}
 	},
 	/**
 	 * @private
