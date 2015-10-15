@@ -79,19 +79,22 @@ $(document).ready(function(){
 			"SELECT\n" +
 			"  p.boro,\n" +
 			"  p.pop,\n" +
+			"  p.name,\n" +
 			"  p.pct,\n" +
 			"  '${displayType}' AS type,\n" +
-			"  ROUND((1000*c.crime_count/p.pop)::numeric, 4) AS per1000\n" +
+			"  COALESCE(\n" +
+			"    ROUND((1000*c.crime_count/p.pop)::NUMERIC, 4),\n" +
+			"  0) AS per1000\n" +
 			"FROM\n" +
-			"  stg_crime_precinct p,\n" +
 			"  (\n" +
-			"    SELECT COUNT(*) as crime_count, pct\n" + 
-			"      FROM stg_crime_location\n" +
-			"      WHERE ${where}\n" +
+			"    SELECT COUNT(*) as crime_count, pct\n" +
+			"    FROM timkeane.stg_crime_location\n" +
+			"    WHERE ${where}\n" +
 			"      GROUP BY pct\n" +
 			"  ) c\n" +
-			"WHERE p.pct = c.pct\n" +
-			"	AND p.pct NOT IN (22, -99)\n" +
+			"FULL JOIN timkeane.stg_crime_precinct p \n" +
+			"ON p.pct = c.pct\n" +
+			"WHERE p.pct NOT IN (22, -99)\n" +
 			"ORDER BY p.pct";
 
 		var summaryChartSql = 
