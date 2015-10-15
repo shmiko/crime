@@ -318,7 +318,8 @@ $(document).ready(function(){
 					{
 						type: "type = '${type}'",
 						mo: "mo BETWEEN ${start} AND ${end}",
-						location: "the_geom_webmercator = ST_SETSRID(ST_MAKEPOINT(${x}, ${y}), 3857)"
+						location: "the_geom_webmercator = ST_SETSRID(ST_MAKEPOINT(${x}, ${y}), 3857)",
+						pct: "pct = ${pct}"
 					}
 				)
 			});	

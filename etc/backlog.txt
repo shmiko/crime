@@ -1,8 +1,5 @@
 
 re-examine nyc.Locate.LocateResult structure
 
-define date picker options type
+all prect chart requires outer join?
 
-nyc.EXTENT ???
-
-diff top for share buttons on large v mobile view 
