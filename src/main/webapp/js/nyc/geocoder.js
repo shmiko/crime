@@ -1,26 +1,12 @@
-/** 
- * @export 
- * @namespace
- */
+/** @export */
 window.nyc = window.nyc || {};
 
 /**
- * A geocoder for geocoding that triggers 'geocode' and 'ambiguous' events
+ * A geocoder
  * @export
  * @interface
  */
 nyc.Geocoder = function(){};
-
-nyc.Geocoder.prototype = {
-	/**
-	 * Geocode an input string
-	 * @export
-	 * @abstract
-	 * @method
-	 * @param {string} input
-	 */
-	search: function(input){}
-};
 
 /**
  * Enum for Geoclient accuracy
@@ -35,12 +21,17 @@ nyc.Geocoder.Accuracy = {
 };
 
 /**
+ * Geocode an input string
  * @export
- * @class
- * @classdesc A class for geocoding
+ * @param {string} input
+ */
+nyc.Geocoder.prototype.search = function(input){};
+
+/**
+ * A class for geocoding that triggers 'geocode' and 'ambiguous' events
+ * @export
  * @constructor
  * @implements {nyc.Geocoder}
- * @extends {nyc.EventHandling}
  * @param {string} url
  * @param {string=} projection
  */
@@ -50,51 +41,14 @@ nyc.Geoclient = function(url, projection){
 };
 
 nyc.Geoclient.prototype = {
-	/** 
-	 * @private
-	 * @member {string}
-	 */
+	/** @private */
 	url: null,
-	/** 
-	 * @private
-	 * @member {string}
-	 */
+	/** @private */
 	projection: null,
 	/**
-	 * Geocode an input string and trigger an event of nyc.Locate.LocateEventType with nyc.Locate.LocateResult or nyc.LocateAmbiguoud data
-	 * @export
-	 * @method
-	 * @param {string} input
-	 */
-	search: function(input){
-		var me = this;
-		input = input.trim();
-		if (input.length == 5 && !isNaN(input)){
-			var p = me.project(nyc.Geoclient.ZIP_CODE_POINTS[input]);
-			me.trigger(
-				p ? nyc.Locate.LocateEventType.GEOCODE : nyc.Locate.LocateEventType.AMBIGUOUS,
-				p ? {coordinates: p, accuracy: nyc.Geocoder.Accuracy.ZIP_CODE, type: nyc.Locate.LocateResultType.GEOCODE, zip: true, name: input} : {input: input, possible: []}
-			);
-		}else if (input.length){
-			input = input.replace(/"/g, '').replace(/'/g, '').replace(/&/g, ' and ');
-			$.ajax({
-				url: me.url + input,
-				dataType: 'jsonp',
-				success: function(response) {
-					me.geoclient(response);
-				},
-				error: function(){
-					console.error('Geoclient error');
-					me.trigger(nyc.Locate.LocateEventType.ERROR);
-				}
-			});
-		}
-	},
-	/**
 	 * @private
-	 * @method
-	 * @param {Array<number>} coordinates
-	 * return {Array<number>} coordinates
+	 * @param {ol.Coordinate} coordinates
+	 * return {ol.Coordinate} coordinates
 	 */
 	project: function(coordinates){
 		if (coordinates && this.projection){
@@ -104,7 +58,6 @@ nyc.Geoclient.prototype = {
 	},
 	/**
 	 * @private
-	 * @method
 	 * @param {Object} response
 	 */
 	geoclient: function(response){
@@ -113,7 +66,12 @@ nyc.Geoclient.prototype = {
 			if (results.length == 1){
 				var result = results[0];
 				if (result.status == "EXACT_MATCH" || result.status == "POSSIBLE_MATCH"){
-					me.trigger(nyc.Locate.LocateEventType.GEOCODE, me.parse(result));
+					var location = me.parse(result);
+					if (location.coordinates[0]){
+						me.trigger(nyc.Locate.LocateEventType.GEOCODE, location);
+					}else{
+						me.trigger(nyc.Locate.LocateEventType.AMBIGUOUS, {input: response.input, possible: []});
+					}
 				}
 			}else{
 				me.trigger(nyc.Locate.LocateEventType.AMBIGUOUS, {input: response.input, possible: me.possible(results)});
@@ -124,22 +82,22 @@ nyc.Geoclient.prototype = {
 	},
 	/**
 	 * @private
-	 * @method
 	 * @param {Array.<nyc.Locate.LocateAmbiguous>} response
-	 * @return {Array<nyc.Locate.LocateResult>}
 	 */
 	possible: function(results){
 		var me = this, possible = [];
 		$.each(results, function(i, r){
 			if (r.status = "POSSIBLE_MATCH"){
-				possible.push(me.parse(r));
+				var location = me.parse(r);
+				if (location.coordinates[0]){
+					possible.push(location);
+				}
 			}
 		});
 		return possible;
 	},
 	/**
 	 * @private
-	 * @method
 	 * @param {Object} result
 	 * @return {nyc.Locate.LocateResult}
 	 */
@@ -163,13 +121,11 @@ nyc.Geoclient.prototype = {
 			type: nyc.Locate.LocateResultType.GEOCODE,
 			coordinates: this.project(p),
 			accuracy: a, /* approximation */
-			name: this.capitalize(ln1.replace(/  /, ' ').replace(/  /, ' ') + ', ' + r.firstBoroughName) + ', NY ' + (r.zipCode || r.leftSegmentZipCode),
-			data: r
+			name: this.capitalize(ln1.replace(/  /, ' ').replace(/  /, ' ') + ', ' + r.firstBoroughName) + ', NY ' + (r.zipCode || r.leftSegmentZipCode || '')
 		};
 	},
 	/**
 	 * @private
-	 * @method
 	 * @param {string} s
 	 * @return {string}
 	 */
@@ -182,6 +138,36 @@ nyc.Geoclient.prototype = {
 			result += ' ';
 		});
 		return result.trim();
+	}
+};
+
+/**
+ * Geocode an input string and trigger an event of nyc.Locate.LocateEventType with nyc.Locate.LocateResult or nyc.LocateAmbiguoud data
+ * @export
+ * @param {string} input
+ */
+nyc.Geoclient.prototype.search = function(input){
+	var me = this;
+	input = input.trim();
+	if (input.length == 5 && !isNaN(input)){
+		var p = me.project(nyc.Geoclient.ZIP_CODE_POINTS[input]);
+		me.trigger(
+			p ? nyc.Locate.LocateEventType.GEOCODE : nyc.Locate.LocateEventType.AMBIGUOUS,
+			p ? {coordinates: p, accuracy: nyc.Geocoder.Accuracy.ZIP_CODE, type: nyc.Locate.LocateResultType.GEOCODE, zip: true, name: input} : {input: input, possible: []}
+		);
+	}else if (input.length){
+		input = input.replace(/"/g, '').replace(/'/g, '').replace(/&/g, ' and ');
+		$.ajax({
+			url: me.url + input,
+			dataType: 'jsonp',
+			success: function(response) {
+				me.geoclient(response);
+			},
+			error: function(){
+				console.error('Geoclient error');
+				me.trigger(nyc.Locate.LocateEventType.ERROR);
+			}
+		});
 	}
 };
 

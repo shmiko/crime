@@ -107,11 +107,10 @@ nyc.ZoomSearch.prototype = {
 		if (possibleResults.length){
 			me.emptyList();
 			$.each(possibleResults, function(i, locateResult){
-				me.list.append(
-					me.listItem('addr', locateResult)
-				);
+				me.list.append(me.listItem('addr', locateResult));
 			});
-			me.list.filterable('refresh');
+			me.list.children().first().addClass('ui-first-child');
+			me.list.children().last().addClass('ui-last-child');
 			me.list.slideDown();
 		}
 	},
@@ -124,7 +123,7 @@ nyc.ZoomSearch.prototype = {
 	 * @return {JQuery}
 	 */
 	listItem: function(typeName, data){
-		var li = $('<li></li>');
+		var li = $('<li class="ui-li-static ui-body-inherit"></li>');
 		li.addClass('srch-type-' + typeName);
 		li.addClass('notranslate');
 		li.attr('translate', 'no');

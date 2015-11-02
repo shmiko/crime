@@ -165,7 +165,8 @@ $(document).ready(function(){
 
 		var cartoLayer = vis.getLayers()[1];
 		var locationLayer = cartoLayer.getSubLayer(1);
-				
+		var heatLayer = vis.getLayers()[2];
+		
 		var precinctSym = new nyc.carto.JenksSymbolizer({
 			cartoSql: cartoSql,
 			jenksColumn: 'per1000',
@@ -190,6 +191,11 @@ $(document).ready(function(){
 				'#stg_crime_location[crime_count<=${value}]{marker-width:50;}']
 		});
 		
+		var heatSym = new nyc.carto.HeatSymbolizer({
+			map: map,
+			layer: heatLayer,
+			css: 'Map{\n\t-torque-frame-count:1;\n\t-torque-animation-duration:10;\n\t-torque-time-attribute:"cartodb_id";\n\t-torque-aggregation-function:"count(cartodb_id)";\n\t-torque-resolution:1;\n\t-torque-data-aggregation:linear;\n}\n#stg_crime_loaction{\n\timage-filters:colorize-alpha(blue,cyan,lightgreen,yellow,orange,red);\n\tmarker-file:url(http://s3.amazonaws.com/com.cartodb.assets.static/alphamarker.png);\n\tmarker-width:${size};\n}'
+		});
 		var viewSwitcher = new nyc.carto.ViewSwitcher([
 			new nyc.carto.View({
 				name: 'precinct',
@@ -219,11 +225,12 @@ $(document).ready(function(){
 			}),
 			new nyc.carto.View({
 				name: 'heat',
-				layer: vis.getLayers()[2],
+				layer: heatLayer,
 				sqlTemplate: 'SELECT * FROM stg_crime_location WHERE ${where}',
 				descriptionTemplate: '<b>Concentration of ${displayType}<br>${displayDates}</b>',
 				filters: filters,
-				legend: new nyc.Legend('<table class="legend heat"><caption>${caption}</caption><tbody><tr><td class="leg-bin leg-bin-0"</td><td class="leg-bin-desc">Lowest Concentration</td></tr><tr><td class="leg-bin leg-bin-1"</td><td class="leg-bin-desc"></td></tr><tr><td class="leg-bin leg-bin-2"></td><td class="leg-bin-desc"></td></tr><tr><td class="leg-bin leg-bin-3"></td><td class="leg-bin-desc"></td></tr><tr><td class="leg-bin leg-bin-4"></td><td class="leg-bin-desc">Highest Concentration</td></tr></tbody></table>')	
+				symbolizer: heatSym,
+				legend: new nyc.Legend('<table class="legend heat"><caption>${caption}</caption><tbody><tr><td class="leg-bin leg-bin-0"</td><td class="leg-bin-desc">Lowest Concentration</td></tr><tr><td class="leg-bin leg-bin-1"</td><td class="leg-bin-desc"></td></tr><tr><td class="leg-bin leg-bin-2"></td><td class="leg-bin-desc"></td></tr><tr><td class="leg-bin leg-bin-3"></td><td class="leg-bin-desc"></td></tr><tr><td class="leg-bin leg-bin-4"></td><td class="leg-bin-desc"></td></tr><tr><td class="leg-bin leg-bin-5"></td><td class="leg-bin-desc">Highest Concentration</td></tr></tbody></table>')	
 			})
 		]);
 
@@ -297,7 +304,7 @@ $(document).ready(function(){
 			});
 			 
 			nyc.app = new nyc.App({
-				map: vis.getNativeMap(),
+				map: map,
 				viewSwitcher: viewSwitcher,
 				locate: new nyc.leaf.Locate(
 					vis.getNativeMap(),

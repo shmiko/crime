@@ -177,16 +177,18 @@ QUnit.test('val', function(assert){
 });
 
 QUnit.test('disambiguate', function(assert){
-	assert.expect(6);
+	assert.expect(9);
 	
+	var names = ['2 Broadway, Manhattan, NY 10004', '2 Broadway, Queens, NY 11414', '2 Broadway, Staten Is, NY 10310'];
 	var control = new this.TEST_CONTROL();
 	assert.equal(control.list.height(), 0);
 	control.disambiguate(this.POSSIBLE_LOCATIONS);
 	assert.ok(control.list.height() > 0);
 	assert.equal(control.list.children().length, 3);
-	assert.equal($(control.list.children()[0]).html(), '2 Broadway, Manhattan, NY 10004');
-	assert.equal($(control.list.children()[1]).html(), '2 Broadway, Queens, NY 11414');
-	assert.equal($(control.list.children()[2]).html(), '2 Broadway, Staten Is, NY 10310');
+	control.list.children().each(function(i, li){
+		assert.notOk($(li).hasClass('ui-screen-hidden'));
+		assert.equal($(li).html(), names[i]);
+	});
 });
 
 QUnit.test('disambiguated', function(assert){

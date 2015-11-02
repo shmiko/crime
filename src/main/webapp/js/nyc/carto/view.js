@@ -46,6 +46,44 @@ nyc.carto.SqlTemplate.prototype = {
 nyc.inherits(nyc.carto.SqlTemplate, nyc.ReplaceTokens);
 
 /**
+ * Object type to hold constructor options for nyc.carto.HeatSymbolizer
+ * @export
+ * @typedef {Object}
+ * @property {L.Map} map
+ * @property {L.Layer} layer
+ * @property {string} css
+ */
+nyc.carto.JenksSymbolizerOptions;
+
+/**
+ * @export
+ * @class
+ * @classdesc Class for managing heatmap symbolization 
+ * @constructor
+ * @extends {nyc.ReplaceTokens}
+ * @mixes {nyc.EventHandling}
+ * @param {nyc.carto.HeatSymbolizer} options
+ */
+nyc.carto.HeatSymbolizer = function(options){
+	this.map = options.map;
+	this.layer = options.layer;
+	this.css = options.css;
+	this.map.on('zoomend', $.proxy(this.symbolize, this));
+};
+
+nyc.carto.HeatSymbolizer.prototype = {
+	sizes: [2, 4, 8, 16, 32, 64, 128, 256, 512, 1024, 2048],
+	symbolize: function(){
+		var css = this.css, idx = this.map.getZoom() - 10;
+		css = this.replace(css, {size: this.sizes[idx] || 1});
+		this.layer.setCartoCSS(css);
+		this.trigger('symbolized');
+	}
+};
+nyc.inherits(nyc.carto.HeatSymbolizer, nyc.ReplaceTokens);
+nyc.inherits(nyc.carto.HeatSymbolizer, nyc.EventHandling);
+
+/**
  * Object type to hold constructor options for nyc.carto.JenksSymbolizer
  * @export
  * @typedef {Object}

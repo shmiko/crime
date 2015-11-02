@@ -82,19 +82,22 @@ table.legend.heat td.leg-bin{
 }
 table.legend.heat .leg-bin-0 {
 	border-top: 2px solid rgba(0,0,0,0.5);
-	background-color: rgba(254,240,217,0.7);
+	background-color: rgba(0,0,255,0.7);
 }
 table.legend.heat .leg-bin-1 {
-	background-color: rgba(253,204,138,0.7);
+	background-color: rgba(0,255,255,0.7);
 }
 table.legend.heat .leg-bin-2 {
-	background-color: rgba(252,141,89,0.7);
+	background-color: rgba(144,238,144,0.7);
 }
 table.legend.heat .leg-bin-3 {
-	background-color: rgba(227,74,51,0.7);
+	background-color: rgba(255,255,0,0.7);
 }
 table.legend.heat .leg-bin-4 {
+	background-color: rgba(255,165,0,0.7);
+}
+table.legend.heat .leg-bin-5 {
 	border-bottom: 2px solid rgba(0,0,0,0.5);
-	background-color: rgba(179,0,0,0.7);
+	background-color: rgba(255,0,0,0.7);
 }
 
