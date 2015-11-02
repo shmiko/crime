@@ -1,4 +1,7 @@
-/** @export */
+/** 
+ * @export 
+ * @namespace
+ */
 window.nyc = window.nyc || {};
 
 /**
