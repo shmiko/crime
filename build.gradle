@@ -77,6 +77,7 @@ task replaceTokens(dependsOn: [setEnv, copyFiles]) << {
 	
 	ant.taskdef(name: 'replace', classname: 'org.apache.tools.ant.taskdefs.Replace')	
 	ant.replace(file: 'build/tmp/js/init.js', token: project.ext['crime.git.geoclient.url'], value: geoUrl)
+	ant.replace(file: 'build/tmp/index.html', token: '/* google analytics */', value: project.ext['crime.analytics'])
 
 }
 

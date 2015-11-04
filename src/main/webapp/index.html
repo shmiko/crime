@@ -18,7 +18,6 @@
 	<meta prefix="og: http://ogp.me/ns#" property="og:image:height" content="626">
 	<meta prefix="og: http://ogp.me/ns#" property="og:description" content="View NYC crime statistics and locations">
 	<meta prefix="og: http://ogp.me/ns#" property="og:site_name" content="NYC.gov">	
-	<meta name="google-translate-customization" content="4707bd7f535893a0-45bca7b6a97e5a2d-g609df9381571b349-c"> 	
  	
 	<title>NYC Crime Map</title>
 
@@ -53,7 +52,7 @@
 		<div class="banner">
 			<img class="logo nypd" src="img/nypd.png" onclick="document.location='./';" alt="NYC Crime Map" title="NYC Crime Map">
 			<img class="logo nyc" src="img/nyc.png" onclick="document.location='./';" alt="NYC Crime Map" title="NYC Crime Map">
-			<h1 class="notranslate" translate="no" onclick="document.location='./';" title="NYC Crime Map">
+			<h1 onclick="document.location='./';" title="NYC Crime Map">
 				Crime Map
 			</h1>
 			<div id="btn-toggle" class="btn-panel"><a><span class="noshow">Map</span></a></div>
@@ -69,7 +68,7 @@
 				<div data-role="collapsible" data-collapsed="false" data-collapsed-icon="carat-d" data-expanded-icon="carat-u">
 					<h3>Legend</h3>
 					<div id="legend"></div>
-					<a class="stat-note" href="http://www.nyc.gov/html/nypd/html/crime_mapping/nyc_crime_map_introduction.shtml" target="_nypd">
+					<a class="stat-note" href="http://www.nyc.gov/html/nypd/html/crime_mapping/nyc_crime_map_introduction.shtml" target="nypd">
         				See statistical/technical notes
   					</a>
 				</div>		
@@ -102,7 +101,7 @@
 			<button title="OK" onclick="$('#alert').fadeOut();">OK</button>
 		</div>
 	</div>
-	<div id="copyright" class="notranslate" translate="no"></div>
+	<div id="copyright"></div>
 	<script src="js/nyc/nyc.js"></script>
 	<script src="js/nyc/collapsible.js"></script>
 	<script src="js/nyc/collapsible-month-range.js"></script>
