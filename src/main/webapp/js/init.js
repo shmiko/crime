@@ -194,7 +194,7 @@ $(document).ready(function(){
 		var heatSym = new nyc.carto.HeatSymbolizer({
 			map: map,
 			layer: heatLayer,
-			css: 'Map{\n\t-torque-frame-count:1;\n\t-torque-animation-duration:10;\n\t-torque-time-attribute:"cartodb_id";\n\t-torque-aggregation-function:"count(cartodb_id)";\n\t-torque-resolution:1;\n\t-torque-data-aggregation:linear;\n}\n#stg_crime_loaction{\n\timage-filters:colorize-alpha(blue,cyan,lightgreen,yellow,orange,red);\n\tmarker-file:url(https://s3.amazonaws.com/com.cartodb.assets.static/alphamarker.png);\n\tmarker-width:${size};\n}'
+			css: 'Map{\n\t-torque-frame-count:1;\n\t-torque-animation-duration:10;\n\t-torque-time-attribute:"cartodb_id";\n\t-torque-aggregation-function:"count(cartodb_id)";\n\t-torque-resolution:1;\n\t-torque-data-aggregation:linear;\n}\n#stg_crime_loaction{\n\timage-filters:colorize-alpha(\n\t\trgba(0,0,255,0.7),\n\t\trgba(0,255,255,0.7),\n\t\trgba(144,238,144,0.7),\n\t\trgba(255,255,0,0.7),\n\t\trgba(255,165,0,0.7),\n\t\trgba(255,0,0,0.7)\n\t);\n\tmarker-file:url(https://s3.amazonaws.com/com.cartodb.assets.static/alphamarker.png);\n\tmarker-width:${size};\n}'
 		});
 		var viewSwitcher = new nyc.carto.ViewSwitcher([
 			new nyc.carto.View({
