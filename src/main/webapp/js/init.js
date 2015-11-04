@@ -230,7 +230,7 @@ $(document).ready(function(){
 				descriptionTemplate: '<b>Concentration of ${displayType}<br>${displayDates}</b>',
 				filters: filters,
 				symbolizer: heatSym,
-				legend: new nyc.Legend('<table class="legend heat"><caption>${caption}</caption><tbody><tr><td class="leg-bin leg-bin-0"</td><td class="leg-bin-desc">Lowest Concentration</td></tr><tr><td class="leg-bin leg-bin-1"</td><td class="leg-bin-desc"></td></tr><tr><td class="leg-bin leg-bin-2"></td><td class="leg-bin-desc"></td></tr><tr><td class="leg-bin leg-bin-3"></td><td class="leg-bin-desc"></td></tr><tr><td class="leg-bin leg-bin-4"></td><td class="leg-bin-desc"></td></tr><tr><td class="leg-bin leg-bin-5"></td><td class="leg-bin-desc">Highest Concentration</td></tr></tbody></table>')	
+				legend: new nyc.Legend('<table class="legend heat"><caption>${caption}</caption><tbody><tr><td class="leg-bin leg-bin-0"></td><td class="leg-bin-desc">Lowest Concentration</td></tr><tr><td class="leg-bin leg-bin-1"></td><td class="leg-bin-desc"></td></tr><tr><td class="leg-bin leg-bin-2"></td><td class="leg-bin-desc"></td></tr><tr><td class="leg-bin leg-bin-3"></td><td class="leg-bin-desc"></td></tr><tr><td class="leg-bin leg-bin-4"></td><td class="leg-bin-desc"></td></tr><tr><td class="leg-bin leg-bin-5"></td><td class="leg-bin-desc">Highest Concentration</td></tr></tbody></table>')	
 			})
 		]);
 
