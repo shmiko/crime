@@ -34,6 +34,25 @@ $(document).ready(function(){
 		
 		var cartoSql = new cartodb.SQL({user: 'timkeane'});
 
+		var sectorSql = 
+			"SELECT\n" +
+			"  ROW_NUMBER() OVER() AS cartodb_id,\n" +
+			"  a.the_geom_webmercator,\n" +
+			"  a.crime_count,\n" +
+			" '${displayType}' AS type,\n" +
+			"  ST_X(a.the_geom_webmercator) AS x,\n" +
+			"  ST_Y(a.the_geom_webmercator) AS y\n" +
+			"FROM\n" +
+			"  (\n" +
+		    "    SELECT\n" +
+		    "      COUNT(*) AS crime_count, s.the_geom_webmercator\n" +
+		    "    FROM stg_crime_location l, stg_crime_sector s\n" +
+		    "    WHERE ${where}\n" +
+		    "      AND l.sct = s.sct\n" +
+		    "      AND ST_CONTAINS(ST_MAKEENVELOPE(-74.257, 40.496, -73.699, 40.916, 4326), l.the_geom)\n" +
+		    "    GROUP BY s.the_geom_webmercator\n" +
+			"  ) a";
+		
 		var locationSql = 
 			"SELECT\n" +
 			"  ROW_NUMBER() OVER() AS cartodb_id,\n" +
@@ -45,7 +64,7 @@ $(document).ready(function(){
 			"FROM\n" +
 			"  (\n" +
 			"    SELECT\n" +
-			"    COUNT(*) AS crime_count, the_geom_webmercator\n" +
+			"      COUNT(*) AS crime_count, the_geom_webmercator\n" +
 			"    FROM stg_crime_location\n" +
 			"    WHERE ${where}\n" +
 			"    	AND ST_CONTAINS(ST_MAKEENVELOPE(-74.257, 40.496, -73.699, 40.916, 4326), the_geom)\n" +
@@ -172,11 +191,11 @@ $(document).ready(function(){
 			jenksColumn: 'per1000',
 			outlierFilter: 'pct NOT IN (22, -99)',
 			baseCss: '#stg_crime_precinct{polygon-opacity:0.6;line-color:#000;line-width:1.5;line-opacity:0.5;}#stg_crime_precinct[pct=22]{polygon-fill:black;polygon-opacity:0.2;}#stg_crime_precinct[pct=-99]{polygon-fill:black;polygon-opacity:0.2;}',
-			cssRules: ['#stg_crime_precinct[per1000<=${value}][pct!=22][pct!=-99]{polygon-fill:rgb(254,240,217);}', 
-				'#stg_crime_precinct[per1000<=${value}][pct!=22][pct!=-99]{polygon-fill:rgb(252,141,89);}',
-				'#stg_crime_precinct[per1000<=${value}][pct!=22][pct!=-99]{polygon-fill:rgb(252,141,89);}',
-				'#stg_crime_precinct[per1000<=${value}][pct!=22][pct!=-99]{polygon-fill:rgb(227,74,51);}',
-				'#stg_crime_precinct[per1000<=${value}][pct!=22][pct!=-99]{polygon-fill:rgb(179,0,0);}']
+			cssRules: ['#stg_crime_precinct[per1000<=${value}][pct!=22][pct!=-99]{polygon-fill:rgb(254,237,222);}', 
+				'#stg_crime_precinct[per1000<=${value}][pct!=22][pct!=-99]{polygon-fill:rgb(253,190,133);}',
+				'#stg_crime_precinct[per1000<=${value}][pct!=22][pct!=-99]{polygon-fill:rgb(253,141,60);}',
+				'#stg_crime_precinct[per1000<=${value}][pct!=22][pct!=-99]{polygon-fill:rgb(230,85,13);}',
+				'#stg_crime_precinct[per1000<=${value}][pct!=22][pct!=-99]{polygon-fill:rgb(166,54,3);}']
 		});
 
 		
@@ -184,18 +203,25 @@ $(document).ready(function(){
 			cartoSql: cartoSql,
 			jenksColumn: 'crime_count',
 			baseCss: '#stg_crime_location{marker-fill-opacity:0.7;marker-line-color:#000;marker-line-width:2;marker-line-opacity:0.5;marker-placement:point;marker-type:ellipse;marker-fill:#5faee7;marker-allow-overlap:true;}',
-			cssRules: ['#stg_crime_location[crime_count<=${value}]{marker-width:10;}', 
-				'#stg_crime_location[crime_count<=${value}]{marker-width:20;}',
-				'#stg_crime_location[crime_count<=${value}]{marker-width:30;}',
-				'#stg_crime_location[crime_count<=${value}]{marker-width:40;}',
-				'#stg_crime_location[crime_count<=${value}]{marker-width:50;}']
+			cssRules: ['#stg_crime_location[zoom<14][crime_count<=${value}]{marker-width:5;}#stg_crime_location[zoom>13][crime_count<=${value}]{marker-width:10;}', 
+				'#stg_crime_location[zoom<14][crime_count<=${value}]{marker-width:10;}#stg_crime_location[zoom>13][crime_count<=${value}]{marker-width:20;}',
+				'#stg_crime_location[zoom<14][crime_count<=${value}]{marker-width:15;}#stg_crime_location[zoom>13][crime_count<=${value}]{marker-width:30;}',
+				'#stg_crime_location[zoom<14][crime_count<=${value}]{marker-width:20;}#stg_crime_location[zoom>13][crime_count<=${value}]{marker-width:40;}',
+				'#stg_crime_location[zoom<14][crime_count<=${value}]{marker-width:25;}#stg_crime_location[zoom>13][crime_count<=${value}]{marker-width:50;}']
 		});
 		
 		var heatSym = new nyc.carto.HeatSymbolizer({
 			map: map,
 			layer: heatLayer,
-			css: 'Map{\n\t-torque-frame-count:1;\n\t-torque-animation-duration:10;\n\t-torque-time-attribute:"cartodb_id";\n\t-torque-aggregation-function:"count(cartodb_id)";\n\t-torque-resolution:1;\n\t-torque-data-aggregation:linear;\n}\n#stg_crime_loaction{\n\timage-filters:colorize-alpha(\n\t\trgba(0,0,255,0.7),\n\t\trgba(0,255,255,0.7),\n\t\trgba(144,238,144,0.7),\n\t\trgba(255,255,0,0.7),\n\t\trgba(255,165,0,0.7),\n\t\trgba(255,0,0,0.7)\n\t);\n\tmarker-file:url(https://s3.amazonaws.com/com.cartodb.assets.static/alphamarker.png);\n\tmarker-width:${size};\n}'
+			css: 'Map{\n\t-torque-frame-count:1;\n\t-torque-animation-duration:10;\n\t-torque-time-attribute:"cartodb_id";\n\t-torque-aggregation-function:"count(cartodb_id)";\n\t-torque-resolution:1;\n\t-torque-data-aggregation:linear;\n}\n#stg_crime_loaction{\n\timage-filters:colorize-alpha(\n\t\trgba(254,237,222,0.7),\n\t\trgba(253,190,133,0.7),\n\t\trgba(253,141,60,0.7),\n\t\trgba(230,85,13,0.7),\n\t\trgba(166,54,3,0.7)\n\t);\n\tmarker-file:url(https://s3.amazonaws.com/com.cartodb.assets.static/alphamarker.png);\n\tmarker-width:${size};\n}'
 		});
+		
+		var locationLeg = new nyc.BinLegend(
+			'location',
+			nyc.BinLegend.SymbolType.POLYGON,
+			nyc.BinLegend.BinType.RANGE_INT
+		);
+		
 		var viewSwitcher = new nyc.carto.ViewSwitcher([
 			new nyc.carto.View({
 				name: 'precinct',
@@ -211,17 +237,22 @@ $(document).ready(function(){
 				)
 			}),
 			new nyc.carto.View({
+				name: 'sector',
+				layer: locationLayer,
+				sqlTemplate: sectorSql,
+				descriptionTemplate: '<b>${displayType} per Location<br>${displayDates}</b>',
+				filters: filters,
+				symbolizer: locationSym,
+				legend: locationLeg
+			}),
+			new nyc.carto.View({
 				name: 'location',
 				layer: locationLayer,
 				sqlTemplate: locationSql,
 				descriptionTemplate: '<b>${displayType} per Location<br>${displayDates}</b>',
 				filters: filters,
 				symbolizer: locationSym,
-				legend: new nyc.BinLegend(
-					'location',
-					nyc.BinLegend.SymbolType.POLYGON,
-					nyc.BinLegend.BinType.RANGE_INT
-				)
+				legend: locationLeg
 			}),
 			new nyc.carto.View({
 				name: 'heat',
@@ -230,7 +261,7 @@ $(document).ready(function(){
 				descriptionTemplate: '<b>Concentration of ${displayType}<br>${displayDates}</b>',
 				filters: filters,
 				symbolizer: heatSym,
-				legend: new nyc.Legend('<table class="legend heat"><caption>${caption}</caption><tbody><tr><td class="leg-bin leg-bin-0"></td><td class="leg-bin-desc">Lowest Concentration</td></tr><tr><td class="leg-bin leg-bin-1"></td><td class="leg-bin-desc"></td></tr><tr><td class="leg-bin leg-bin-2"></td><td class="leg-bin-desc"></td></tr><tr><td class="leg-bin leg-bin-3"></td><td class="leg-bin-desc"></td></tr><tr><td class="leg-bin leg-bin-4"></td><td class="leg-bin-desc"></td></tr><tr><td class="leg-bin leg-bin-5"></td><td class="leg-bin-desc">Highest Concentration</td></tr></tbody></table>')	
+				legend: new nyc.Legend('<table class="legend heat"><caption>${caption}</caption><tbody><tr><td class="leg-bin leg-bin-0"></td><td class="leg-bin-desc">Lowest Concentration</td></tr><tr><td class="leg-bin leg-bin-1"></td><td class="leg-bin-desc"></td></tr><tr><td class="leg-bin leg-bin-2"></td><td class="leg-bin-desc"></td></tr><tr><td class="leg-bin leg-bin-3"></td><td class="leg-bin-desc"></td></tr><tr><td class="leg-bin leg-bin-4"></td><td class="leg-bin-desc">Highest Concentration</td></tr></tbody></table>')	
 			})
 		]);
 

@@ -326,19 +326,20 @@ nyc.carto.ViewSwitcher.prototype = {
 	 * @param {Object} descriptionValues
 	 */
 	switchView: function(viewName, filterValues, descriptionValues){
+		var activeView;
 		$('.cartodb-infowindow').fadeOut();
 		for (var name in this.views) {
 			var view = this.views[name];
 			if (view){
 				if (viewName == name){
-					var me = this;
+					activeView = view;
 					view.update(filterValues, descriptionValues);
-					view.visibility(true);
 				}else{
 					view.visibility(false);
 				}
 			}
 		}
+		activeView.visibility(true);
 	}
 };
 

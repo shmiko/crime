@@ -389,10 +389,13 @@ nyc.App.prototype = {
 	 * @method
 	 */
 	updateView: function(){
-		var filters = this.filters();
+		var filters = this.filters(), view = this.mapType.val();
 		$('#spinner').show();
-		this.disableChoices();		
-		this.viewSwitcher.switchView(this.mapType.val(), filters.filterValues, filters.descriptionValues);
+		if (view == 'location' && this.map.getZoom() < 13){
+			view = 'sector';
+		}
+		this.disableChoices();	
+		this.viewSwitcher.switchView(view, filters.filterValues, filters.descriptionValues);
 		this.updatePrecinctChart();		
 		this.updateSummaryChart();
 	},

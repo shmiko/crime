@@ -20,19 +20,19 @@ table.legend.precinct img {
 	border: 2px solid rgba(0,0,0,0.5);
 }
 table.legend.precinct .leg-bin-0 img {
-	background-color: rgba(254, 240, 217, 0.5);
+	background-color: rgba(254,237,222, 0.5);
 }
 table.legend.precinct .leg-bin-1 img {
-	background-color: rgba(252, 141, 89, 0.5);
+	background-color: rgba(253,190,133, 0.5);
 }
 table.legend.precinct .leg-bin-2 img {
-	background-color: rgba(252, 141, 89, 0.5);
+	background-color: rgba(253,141,60, 0.5);
 }
 table.legend.precinct .leg-bin-3 img {
-	background-color: rgba(227, 74, 51, 0.5);
+	background-color: rgba(230,85,13, 0.5);
 }
 table.legend.precinct .leg-bin-4 img {
-	background-color: rgba(179, 0, 0, 0.5);
+	background-color: rgba(166,54,3, 0.5);
 }
 /* location */
 table.legend.location img {
@@ -40,29 +40,29 @@ table.legend.location img {
 	border: 2px solid rgba(0,0,0,0.5);
 }
 table.legend.location .leg-bin-0 img {
-	border-radius: 10px;
-	width: 10px;
-	height: 10px;
+	border-radius: 7px;
+	width: 7px;
+	height: 7px;
 }
 table.legend.location .leg-bin-1 img {
-	border-radius: 20px;
-	width: 20px;
-	height: 20px;
+	border-radius: 14px;
+	width: 14px;
+	height: 14px;
 }
 table.legend.location .leg-bin-2 img {
-	border-radius: 30px;
-	width: 30px;
-	height: 30px;
+	border-radius: 21px;
+	width: 21px;
+	height: 21px;
 }
 table.legend.location .leg-bin-3 img {
-	border-radius: 40px;
-	width: 40px;
-	height: 40px;
+	border-radius: 28px;
+	width: 28px;
+	height: 28px;
 }
 table.legend.location .leg-bin-4 img {
-	border-radius: 50px;
-	width: 50px;
-	height: 50px;
+	border-radius: 35px;
+	width: 35px;
+	height: 35px;
 }
 /* heat */
 table.legend.heat {
@@ -82,22 +82,19 @@ table.legend.heat td.leg-bin{
 }
 table.legend.heat .leg-bin-0 {
 	border-top: 2px solid rgba(0,0,0,0.5);
-	background-color: rgba(0,0,255,0.7);
+	background-color: rgba(254,237,222,0.7);
 }
 table.legend.heat .leg-bin-1 {
-	background-color: rgba(0,255,255,0.7);
+	background-color: rgba(253,190,133,0.7);
 }
 table.legend.heat .leg-bin-2 {
-	background-color: rgba(144,238,144,0.7);
+	background-color: rgba(253,141,60,0.7);
 }
 table.legend.heat .leg-bin-3 {
-	background-color: rgba(255,255,0,0.7);
+	background-color: rgba(230,85,13,0.7);
 }
 table.legend.heat .leg-bin-4 {
-	background-color: rgba(255,165,0,0.7);
-}
-table.legend.heat .leg-bin-5 {
+	background-color: rgba(166,54,3,0.7);
 	border-bottom: 2px solid rgba(0,0,0,0.5);
-	background-color: rgba(255,0,0,0.7);
 }
 
