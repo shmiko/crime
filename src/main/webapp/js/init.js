@@ -213,7 +213,25 @@ $(document).ready(function(){
 		var heatSym = new nyc.carto.HeatSymbolizer({
 			map: map,
 			layer: heatLayer,
-			css: 'Map{\n\t-torque-frame-count:1;\n\t-torque-animation-duration:10;\n\t-torque-time-attribute:"cartodb_id";\n\t-torque-aggregation-function:"count(cartodb_id)";\n\t-torque-resolution:1;\n\t-torque-data-aggregation:linear;\n}\n#stg_crime_loaction{\n\timage-filters:colorize-alpha(\n\t\trgba(254,237,222,0.7),\n\t\trgba(253,190,133,0.7),\n\t\trgba(253,141,60,0.7),\n\t\trgba(230,85,13,0.7),\n\t\trgba(166,54,3,0.7)\n\t);\n\tmarker-file:url(https://s3.amazonaws.com/com.cartodb.assets.static/alphamarker.png);\n\tmarker-width:${size};\n}'
+			css: 'Map{\n' +
+				'	-torque-frame-count:1;\n' +
+				'	-torque-animation-duration:10;\n' +
+				'	-torque-time-attribute:"cartodb_id";\n' +
+				'	-torque-aggregation-function:"count(cartodb_id)";\n' +
+				'	-torque-resolution:1;\n' +
+				'	-torque-data-aggregation:linear;\n' +
+				'}\n' +
+				'#stg_crime_loaction{\n' +
+				'	image-filters:colorize-alpha(\n' +
+				'		rgba(254,237,222,0.7),\n' +
+				'		rgba(253,190,133,0.7),\n' +
+				'		rgba(253,141,60,0.7),\n' +
+				'		rgba(230,85,13,0.7),\n' +
+				'		rgba(166,54,3,0.7)\n' +
+				'	);\n' +
+				'	marker-file:url(https://s3.amazonaws.com/com.cartodb.assets.static/alphamarker.png);\n' +
+				'	marker-width:${size};\n' +
+				'}'
 		});
 		
 		var locationLeg = new nyc.BinLegend(
