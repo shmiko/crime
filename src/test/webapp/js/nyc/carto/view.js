@@ -21,6 +21,49 @@ QUnit.test('sql', function(assert){
 	assert.equal(result, "SELECT 'nothing' AS something FROM everything WHERE col_a = 'valueA' AND col_b > 100 AND col_c BETWEEN 1 AND 2");
 });
 
+QUnit.module('nyc.carto.HeatSymbolizer', {
+	beforeEach: function(assert){
+		setup(assert, this);
+	},
+	afterEach: function(assert){
+		teardown(assert, this);
+	}
+});
+
+QUnit.test('symbolize', function(assert){
+	assert.expect(38);
+	
+	var MockMap = function(){
+		this.zoom = -1;
+		this.getZoom = function(){
+			return this.zoom;
+		}
+	};
+	nyc.inherits(MockMap, nyc.EventHandling);
+	var map = new MockMap();
+	var layer = this.MOCK_LAYER;
+	
+	var options = {
+		map: map,
+		layer: layer,
+		css: '#carto_css{marker-width:${size};}'
+	};
+	var symbolizer = new nyc.carto.HeatSymbolizer(options);
+
+	for (var zoom = 0; zoom < 19; zoom++){
+		var idx = zoom - 10;
+		var size = symbolizer.sizes[idx] || 1;
+		map.zoom = zoom;
+		symbolizer.one('symbolized', function(){
+			assert.ok(true);
+		});
+		map.trigger('zoomend');
+		assert.equal(layer.css, '#carto_css{marker-width:' + size + ';}');
+	}
+
+
+});
+
 QUnit.module('nyc.carto.JenksSymbolizer', {
 	beforeEach: function(assert){
 		setup(assert, this);

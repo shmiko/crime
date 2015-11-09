@@ -53,7 +53,7 @@ nyc.inherits(nyc.carto.SqlTemplate, nyc.ReplaceTokens);
  * @property {L.Layer} layer
  * @property {string} css
  */
-nyc.carto.JenksSymbolizerOptions;
+nyc.carto.HeatSymbolizer;
 
 /**
  * @export
