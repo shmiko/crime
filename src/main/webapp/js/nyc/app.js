@@ -75,7 +75,7 @@ nyc.App = function(options){
 
 	$('*').mousemove(me.hideTip);
 	
-	me.map.on('zoomend', $.proxy(me.checkForUpdate, me));
+	me.map.on('viewreset', $.proxy(me.checkForUpdate, me));
 	
 	me.updateView();
 	
@@ -398,10 +398,11 @@ nyc.App.prototype = {
 	},
 	checkForUpdate: function(){
 		var zoom = this.map.getZoom();
-		if ((this.prevZoom < 13 && zoom == 13) || (this.prevZoom > 12 && zoom == 12)){
+		if ((this.prevZoom < 13 && zoom >= 13) || (this.prevZoom > 12 && zoom <= 12)){
 			this.updateView();
 		}
 		this.prevZoom = zoom;
+		$('#legend')[this.map.getZoom() < 14 ? 'addClass' : 'removeClass']('small');
 	},
 	/**
 	 * @private
@@ -435,9 +436,6 @@ nyc.App.prototype = {
 	 */
 	updateLegend: function(legendHtml){
 		var legend = $(legendHtml);
-		if (this.map.getZoom() < 14){
-			legend.addClass('small');
-		}
 		$('#spinner').hide();
 		$('#legend').html(legend);
 		$('#first-load').fadeOut();

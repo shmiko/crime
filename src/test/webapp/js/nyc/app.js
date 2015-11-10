@@ -980,7 +980,10 @@ QUnit.test('date', function(assert){
 });
 
 QUnit.test('checkForUpdate', function(assert){
-	assert.expect(6);
+	assert.expect(12);
+	
+	var legend = $('<div id="legend" class="small"></div>');
+	$('body').append(legend);
 	
 	this.MOCK_MAP.zoom = 13;
 
@@ -991,25 +994,37 @@ QUnit.test('checkForUpdate', function(assert){
 	};
 	
 	this.MOCK_MAP.zoom = 12;
-	this.MOCK_MAP.trigger('zoomend');
+	this.MOCK_MAP.trigger('viewreset');
 	
+	assert.ok(legend.hasClass('small'));
 	assert.equal(app.prevZoom, 12);
 	
 	this.MOCK_MAP.zoom = 11;
-	this.MOCK_MAP.trigger('zoomend');
+	this.MOCK_MAP.trigger('viewreset');
 
+	assert.ok(legend.hasClass('small'));
 	assert.equal(app.prevZoom, 11);
 	
 	app.prevZoom = 12;
 	this.MOCK_MAP.zoom = 13;
-	this.MOCK_MAP.trigger('zoomend');
+	this.MOCK_MAP.trigger('viewreset');
 	
+	assert.ok(legend.hasClass('small'));
 	assert.equal(app.prevZoom, 13);
 	
 	this.MOCK_MAP.zoom = 14;
-	this.MOCK_MAP.trigger('zoomend');
+	this.MOCK_MAP.trigger('viewreset');
 
+	assert.notOk(legend.hasClass('small'));
 	assert.equal(app.prevZoom, 14);
+	
+	this.MOCK_MAP.zoom = 13;
+	this.MOCK_MAP.trigger('viewreset');
+
+	assert.ok(legend.hasClass('small'));
+	assert.equal(app.prevZoom, 13);
+	
+	legend.remove();
 });
 
 QUnit.test('updateView (precinct)', function(assert){
@@ -1208,39 +1223,11 @@ QUnit.test('updateLegend', function(assert){
 	this.MOCK_MAP.zoom = 14;
 	
 	var app = this.TEST_APP;
-	app.updateLegend('<div></div>');
+	app.updateLegend('<div>legend</div>');
 
 	setTimeout(function(){
 		assert.equal(spinner.css('display'), 'none');
-		assert.equal(legend.html(), '<div></div>');
-		assert.equal(firstload.css('display'), 'none');
-		spinner.remove();
-		legend.remove();
-		firstload.remove();
-		done();
-	}, 1000);
-
-});
-QUnit.test('updateLegend (small)', function(assert){
-	assert.expect(3);
-	
-	var done = assert.async();
-	
-	var spinner = $('<div id="spinner" style="display:block"></div>');
-	$('body').append(spinner);
-	var legend = $('<div id="legend"></div>');
-	$('body').append(legend);
-	var firstload = $('<div id="first-load" style="display:block"></div>');
-	$('body').append(firstload);
-
-	this.MOCK_MAP.zoom = 12;
-
-	var app = this.TEST_APP;
-	app.updateLegend('<div></div>');
-
-	setTimeout(function(){
-		assert.equal(spinner.css('display'), 'none');
-		assert.equal(legend.html(), '<div class="small"></div>');
+		assert.equal(legend.html(), '<div>legend</div>');
 		assert.equal(firstload.css('display'), 'none');
 		spinner.remove();
 		legend.remove();

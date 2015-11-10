@@ -64,27 +64,27 @@ table.legend.location .leg-bin-4 img {
 	width: 49px;
 	height: 49px;
 }
-table.legend.location.small .leg-bin-0 img {
+.small table.legend.location .leg-bin-0 img {
 	border-radius: 4px;
 	width: 4px;
 	height: 4px;
 }
-table.legend.location.small .leg-bin-1 img {
+.small table.legend.location .leg-bin-1 img {
 	border-radius: 9px;
 	width: 9px;
 	height: 9px;
 }
-table.legend.location.small .leg-bin-2 img {
+.small table.legend.location .leg-bin-2 img {
 	border-radius: 14px;
 	width: 14px;
 	height: 14px;
 }
-table.legend.location.small .leg-bin-3 img {
+.small table.legend.location .leg-bin-3 img {
 	border-radius: 19px;
 	width: 19px;
 	height: 19px;
 }
-table.legend.location.small .leg-bin-4 img {
+.small table.legend.location .leg-bin-4 img {
 	border-radius: 24px;
 	width: 24px;
 	height: 24px;
