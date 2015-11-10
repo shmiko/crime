@@ -46,9 +46,10 @@ nyc.App = function(options){
 	me.boroughNames = options.boroughNames || me.boroughNames;
 	
 	me.viewSwitcher.views.location.layer.infowindow.set({maxHeight: "none", sanitizeTemplate: false});
+	me.viewSwitcher.views.sector.layer.infowindow.set({maxHeight: "none", sanitizeTemplate: false});
 	me.viewSwitcher.views.precinct.layer.infowindow.set({maxHeight: "none", sanitizeTemplate: false});
 	
-	me.viewSwitcher.on('updated', me.updateLegend);
+	me.viewSwitcher.on('updated', $.proxy(me.updateLegend), me);
 	me.mapType.on('change', function(){$('#legend').empty();});
 	me.mapType.on('change', $.proxy(me.updateView, me));
 	me.crimeType.on('change', $.proxy(me.updateView, me));
@@ -74,7 +75,11 @@ nyc.App = function(options){
 
 	$('*').mousemove(me.hideTip);
 	
+	me.map.on('zoomend', $.proxy(me.checkForUpdate, me));
+	
 	me.updateView();
+	
+	me.prevZoom = me.map.getZoom();
 };
 
 nyc.App.prototype = {
@@ -93,6 +98,11 @@ nyc.App.prototype = {
 	 * @member {L.Marker|L.GeoJSON}
 	 */
 	locationLayer: null,
+	/**
+	 * @private
+	 * @member {number}
+	 */
+	prevZoom: -1,
 	/**
 	 * @private
 	 * @member {L.icon}
@@ -148,6 +158,8 @@ nyc.App.prototype = {
 		var me = this, filters = me.filters().filterValues;
 		if (args.pct){
 			filters.pct = {pct: args.pct};
+		}else if (args.sct){
+			filters.sct = {sct: args.sct};
 		}else{
 			filters.location = {x: args.x, y: args.y};
 		}
@@ -384,6 +396,14 @@ nyc.App.prototype = {
 		date.setFullYear(date.getFullYear() + yearOffset);
 		return date;
 	},
+	checkForUpdate: function(){
+		var zoom = this.map.getZoom();
+		if ((this.prevZoom < 13 && zoom == 13) || (this.prevZoom > 12 && zoom == 12)){
+			$('.cartodb-popup').hide();
+			this.updateView();
+		}
+		this.prevZoom = zoom;
+	},
 	/**
 	 * @private
 	 * @method
@@ -415,8 +435,12 @@ nyc.App.prototype = {
 	 * @param {JQuery|Element|string} yearOffset
 	 */
 	updateLegend: function(legendHtml){
+		var legend = $(legendHtml);
+		if (this.map.getZoom() < 14){
+			legend.addClass('small');
+		}
 		$('#spinner').hide();
-		$('#legend').html(legendHtml);
+		$('#legend').html(legend);
 		$('#first-load').fadeOut();
 	},
 	/**

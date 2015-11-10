@@ -355,7 +355,10 @@ div.cartodb-popup-content .crime-count.crime-more {
 	padding: 0 0 0 25px;
 	font-weight: bold;
 }
-.precinct div.cartodb-popup-content .crime-count:after {
+.location div.cartodb-popup-content .crime-count:after {
+	top: 23px;
+}
+.precinct div.cartodb-popup-content .crime-count:after, .sector div.cartodb-popup-content .crime-count:after {
 	top: 45px;
 }
 a.crime-count:hover:after {
@@ -364,9 +367,6 @@ a.crime-count:hover:after {
 a.stat-note, a.stat-note:visited {
 	color: black;
 	font-weight: normal;
-}
-.location div.cartodb-popup-content .crime-count:after {
-	top: 23px;
 }
 div.cartodb-popup-content .crime-count-type {
 	display: none;

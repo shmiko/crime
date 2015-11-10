@@ -38,6 +38,7 @@ $(document).ready(function(){
 			"SELECT\n" +
 			"  ROW_NUMBER() OVER() AS cartodb_id,\n" +
 			"  a.the_geom_webmercator,\n" +
+			"  a.sct,\n" +
 			"  a.crime_count,\n" +
 			" '${displayType}' AS type,\n" +
 			"  ST_X(a.the_geom_webmercator) AS x,\n" +
@@ -45,12 +46,14 @@ $(document).ready(function(){
 			"FROM\n" +
 			"  (\n" +
 		    "    SELECT\n" +
-		    "      COUNT(*) AS crime_count, s.the_geom_webmercator\n" +
+		    "      COUNT(*) AS crime_count,\n" + 
+		    "      s.sct,\n" +
+		    "      s.the_geom_webmercator\n" +
 		    "    FROM stg_crime_location l, stg_crime_sector s\n" +
 		    "    WHERE ${where}\n" +
 		    "      AND l.sct = s.sct\n" +
 		    "      AND ST_CONTAINS(ST_MAKEENVELOPE(-74.257, 40.496, -73.699, 40.916, 4326), l.the_geom)\n" +
-		    "    GROUP BY s.the_geom_webmercator\n" +
+		    "    GROUP BY s.the_geom_webmercator, s.sct\n" +
 			"  ) a";
 		
 		var locationSql = 
@@ -184,6 +187,7 @@ $(document).ready(function(){
 
 		var cartoLayer = vis.getLayers()[1];
 		var locationLayer = cartoLayer.getSubLayer(1);
+		var sectorLayer = cartoLayer.getSubLayer(2);
 		var heatLayer = vis.getLayers()[2];
 		
 		var precinctSym = new nyc.carto.JenksSymbolizer({
@@ -256,9 +260,9 @@ $(document).ready(function(){
 			}),
 			new nyc.carto.View({
 				name: 'sector',
-				layer: locationLayer,
+				layer: sectorLayer,
 				sqlTemplate: sectorSql,
-				descriptionTemplate: '<b>${displayType} per Location<br>${displayDates}</b>',
+				descriptionTemplate: '<b>${displayType} per Sector<br>${displayDates}</b>',
 				filters: filters,
 				symbolizer: locationSym,
 				legend: locationLeg
@@ -378,7 +382,8 @@ $(document).ready(function(){
 						type: "type = '${type}'",
 						mo: "mo BETWEEN ${start} AND ${end}",
 						location: "the_geom_webmercator = ST_SETSRID(ST_MAKEPOINT(${x}, ${y}), 3857)",
-						pct: "pct = ${pct}"
+						pct: "pct = ${pct}",
+						sct: "sct = '${sct}'"
 					}
 				)
 			});	

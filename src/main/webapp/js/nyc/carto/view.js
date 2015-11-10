@@ -331,11 +331,10 @@ nyc.carto.ViewSwitcher.prototype = {
 		for (var name in this.views) {
 			var view = this.views[name];
 			if (view){
+				view.visibility(false);
 				if (viewName == name){
 					activeView = view;
 					view.update(filterValues, descriptionValues);
-				}else{
-					view.visibility(false);
 				}
 			}
 		}
