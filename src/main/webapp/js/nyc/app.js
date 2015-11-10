@@ -399,7 +399,6 @@ nyc.App.prototype = {
 	checkForUpdate: function(){
 		var zoom = this.map.getZoom();
 		if ((this.prevZoom < 13 && zoom == 13) || (this.prevZoom > 12 && zoom == 12)){
-			$('.cartodb-popup').hide();
 			this.updateView();
 		}
 		this.prevZoom = zoom;

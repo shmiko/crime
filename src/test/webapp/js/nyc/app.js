@@ -3,7 +3,8 @@ QUnit.module('nyc.App', {
 		setup(assert, this);
 		var hooks = this;
 		
-		this.MOCK_MAP = {
+		var MockMap = function(){};
+		MockMap.prototype = {
 			removedLayer: null,
 			bounds: null,
 			coordinates: null,
@@ -23,10 +24,15 @@ QUnit.module('nyc.App', {
 				this.coordinates = coords;
 				this.zoom = zoom;
 				this.options = opts;
+			},
+			getZoom: function(){
+				return this.zoom;
 			}
 		};
-
-		MockViewSwitcher = function(){};
+		nyc.inherits(MockMap, nyc.EventHandling);
+		this.MOCK_MAP = new MockMap();
+		
+		var MockViewSwitcher = function(){};
 		MockViewSwitcher.prototype = {
 			viewName: null,
 			filterValues: null,
@@ -35,7 +41,13 @@ QUnit.module('nyc.App', {
 				precinct: {
 					layer: hooks.MOCK_LAYER
 				},
+				sector: {
+					layer: hooks.MOCK_LAYER
+				},
 				location: {
+					layer: hooks.MOCK_LAYER
+				},
+				heat: {
 					layer: hooks.MOCK_LAYER
 				}
 			},
@@ -267,6 +279,45 @@ QUnit.test('drillDown (precint view)', function(assert){
 	}, 1000);
 });
 
+QUnit.test('drillDown (sector view)', function(assert){
+	assert.expect(6);
+			
+	var done = assert.async();
+
+	var infowin = $('<div class="cartodb-popup v2"><div class="cartodb-popup-content"><a class="crime-count"></a><ul class="crime-count-type" style="display:none"></ul></div></div>');
+	$('body').append(infowin);
+	
+	var btn = $('div.cartodb-popup.v2 .cartodb-popup-content .crime-count');
+
+	var rows = [{type: 'a',  crime_count: 5}, {type: 'b',  crime_count: 2}, {type: 'c',  crime_count: 1}];
+	this.MOCK_DRILLDOWN_DAO.resultData = {rows: rows};
+	
+	this.MOCK_MAP.zoom = 10;
+	
+	var app = this.TEST_APP;	
+	app.panPopup = function(args){
+		assert.ok(true);
+	};
+	app.filters = function(){
+		return {filterValues: {filterName: {field: 'value'}}};
+	};
+	
+	app.drillDown({x: '1', y: '2', sct: '94A'});
+	
+	assert.deepEqual(this.MOCK_DRILLDOWN_DAO.filters, {filterName: {field: 'value'}, sct: {sct: '94A'}});
+	
+	$('ul.crime-count-type li').each(function(i, li){
+		assert.equal($(li).html(), rows[i].crime_count + ' ' + app.crimeTypePlurals[rows[i].type]);
+	});
+	
+	setTimeout(function(){
+		assert.equal($('ul.crime-count-type').css('display'), 'block');
+		infowin.remove();
+		done();
+	}, 1000);
+
+});
+
 QUnit.test('drillDown (location view)', function(assert){
 	assert.expect(6);
 			
@@ -279,6 +330,8 @@ QUnit.test('drillDown (location view)', function(assert){
 
 	var rows = [{type: 'a',  crime_count: 5}, {type: 'b',  crime_count: 2}, {type: 'c',  crime_count: 1}];
 	this.MOCK_DRILLDOWN_DAO.resultData = {rows: rows};
+	
+	this.MOCK_MAP.zoom = 13;
 	
 	var app = this.TEST_APP;	
 	app.panPopup = function(args){
@@ -926,7 +979,40 @@ QUnit.test('date', function(assert){
 	assert.deepEqual(app.date(new Date('2014-01-01T05:00:00.000Z'), -1), new Date('2013-01-01T05:00:00.000Z'));
 });
 
-QUnit.test('updateView', function(assert){
+QUnit.test('checkForUpdate', function(assert){
+	assert.expect(6);
+	
+	this.MOCK_MAP.zoom = 13;
+
+	var app = this.TEST_APP;
+	app.prevZoom = 13;
+	app.updateView = function(){
+		assert.ok(true);
+	};
+	
+	this.MOCK_MAP.zoom = 12;
+	this.MOCK_MAP.trigger('zoomend');
+	
+	assert.equal(app.prevZoom, 12);
+	
+	this.MOCK_MAP.zoom = 11;
+	this.MOCK_MAP.trigger('zoomend');
+
+	assert.equal(app.prevZoom, 11);
+	
+	app.prevZoom = 12;
+	this.MOCK_MAP.zoom = 13;
+	this.MOCK_MAP.trigger('zoomend');
+	
+	assert.equal(app.prevZoom, 13);
+	
+	this.MOCK_MAP.zoom = 14;
+	this.MOCK_MAP.trigger('zoomend');
+
+	assert.equal(app.prevZoom, 14);
+});
+
+QUnit.test('updateView (precinct)', function(assert){
 	assert.expect(7);
 
 	var spinner = $('<div id="spinner" style="display:none"></div>');
@@ -977,6 +1063,112 @@ QUnit.test('updateView', function(assert){
 	spinner.remove();
 });
 
+QUnit.test('updateView (location)', function(assert){
+	assert.expect(7);
+
+	var spinner = $('<div id="spinner" style="display:none"></div>');
+	$('body').append(spinner);
+	
+	var filters = nyc.App.prototype.filters;
+	nyc.App.prototype.filters = function(){
+		return {filterValues: 'mockFilterValues', descriptionValues: 'mockDescriptionValues'};
+	};
+	var updatePrecinctChart = nyc.App.prototype.updatePrecinctChart;
+	nyc.App.prototype.updatePrecinctChart = function(){
+		assert.ok(true);
+	};
+	var updateSummaryChart = nyc.App.prototype.updateSummaryChart;
+	nyc.App.prototype.updateSummaryChart = function(){
+		assert.ok(true);
+	};
+	var disableChoices = nyc.App.prototype.disableChoices;
+	nyc.App.prototype.disableChoices = function(){
+		assert.ok(true);
+	};
+
+	this.MOCK_MAP.zoom = 13;
+	
+	this.MOCK_MAP_TYPE.returnVal = 'location';
+	
+	var app = new nyc.App({
+		map: this.MOCK_MAP,
+		viewSwitcher: this.MOCK_VIEW_SWITCHER,
+		locate: this.MOCK_LOCATE,
+		controls: this.MOCK_CONTROLS,
+		mapType: this.MOCK_MAP_TYPE,
+		crimeType: this.MOCK_CRIME_TYPE, 
+		dateRange: this.MOCK_DATE_RANGE,
+		precinctChart: this.MOCK_PRECINCT_CHART,
+		summaryChart: this.MOCK_SUMMARY_CHART,
+		locationInfo: this.MOCK_LOCATION_DAO,
+		crimeDrillDown: this.MOCK_DRILLDOWN_DAO
+	});
+	
+	assert.equal(spinner.css('display'), 'block');
+	assert.equal(this.MOCK_VIEW_SWITCHER.viewName, this.MOCK_MAP_TYPE.returnVal);
+	assert.equal(this.MOCK_VIEW_SWITCHER.filterValues, 'mockFilterValues');
+	assert.equal(this.MOCK_VIEW_SWITCHER.descriptionValues, 'mockDescriptionValues');
+
+	nyc.App.prototype.filters = filters;
+	nyc.App.prototype.updatePrecinctChart = updatePrecinctChart;
+	nyc.App.prototype.updateSummaryChart = updateSummaryChart;
+	nyc.App.prototype.disableChoices = disableChoices;
+	spinner.remove();
+});
+
+QUnit.test('updateView (sector)', function(assert){
+	assert.expect(7);
+
+	var spinner = $('<div id="spinner" style="display:none"></div>');
+	$('body').append(spinner);
+	
+	var filters = nyc.App.prototype.filters;
+	nyc.App.prototype.filters = function(){
+		return {filterValues: 'mockFilterValues', descriptionValues: 'mockDescriptionValues'};
+	};
+	var updatePrecinctChart = nyc.App.prototype.updatePrecinctChart;
+	nyc.App.prototype.updatePrecinctChart = function(){
+		assert.ok(true);
+	};
+	var updateSummaryChart = nyc.App.prototype.updateSummaryChart;
+	nyc.App.prototype.updateSummaryChart = function(){
+		assert.ok(true);
+	};
+	var disableChoices = nyc.App.prototype.disableChoices;
+	nyc.App.prototype.disableChoices = function(){
+		assert.ok(true);
+	};
+
+	this.MOCK_MAP.zoom = 10;
+	
+	this.MOCK_MAP_TYPE.returnVal = 'location';
+	
+	var app = new nyc.App({
+		map: this.MOCK_MAP,
+		viewSwitcher: this.MOCK_VIEW_SWITCHER,
+		locate: this.MOCK_LOCATE,
+		controls: this.MOCK_CONTROLS,
+		mapType: this.MOCK_MAP_TYPE,
+		crimeType: this.MOCK_CRIME_TYPE, 
+		dateRange: this.MOCK_DATE_RANGE,
+		precinctChart: this.MOCK_PRECINCT_CHART,
+		summaryChart: this.MOCK_SUMMARY_CHART,
+		locationInfo: this.MOCK_LOCATION_DAO,
+		crimeDrillDown: this.MOCK_DRILLDOWN_DAO
+	});
+	
+	assert.equal(spinner.css('display'), 'block');
+	assert.equal(this.MOCK_VIEW_SWITCHER.viewName, 'sector');
+	assert.equal(this.MOCK_VIEW_SWITCHER.filterValues, 'mockFilterValues');
+	assert.equal(this.MOCK_VIEW_SWITCHER.descriptionValues, 'mockDescriptionValues');
+
+	nyc.App.prototype.filters = filters;
+	nyc.App.prototype.updatePrecinctChart = updatePrecinctChart;
+	nyc.App.prototype.updateSummaryChart = updateSummaryChart;
+	nyc.App.prototype.disableChoices = disableChoices;
+	spinner.remove();
+});
+
 QUnit.test('disableChoices', function(assert){
 	assert.expect(6);
 	
@@ -1013,12 +1205,42 @@ QUnit.test('updateLegend', function(assert){
 	var firstload = $('<div id="first-load" style="display:block"></div>');
 	$('body').append(firstload);
 
+	this.MOCK_MAP.zoom = 14;
+	
 	var app = this.TEST_APP;
-	app.updateLegend('legend-html');
+	app.updateLegend('<div></div>');
 
 	setTimeout(function(){
 		assert.equal(spinner.css('display'), 'none');
-		assert.equal(legend.html(), 'legend-html');
+		assert.equal(legend.html(), '<div></div>');
+		assert.equal(firstload.css('display'), 'none');
+		spinner.remove();
+		legend.remove();
+		firstload.remove();
+		done();
+	}, 1000);
+
+});
+QUnit.test('updateLegend (small)', function(assert){
+	assert.expect(3);
+	
+	var done = assert.async();
+	
+	var spinner = $('<div id="spinner" style="display:block"></div>');
+	$('body').append(spinner);
+	var legend = $('<div id="legend"></div>');
+	$('body').append(legend);
+	var firstload = $('<div id="first-load" style="display:block"></div>');
+	$('body').append(firstload);
+
+	this.MOCK_MAP.zoom = 12;
+
+	var app = this.TEST_APP;
+	app.updateLegend('<div></div>');
+
+	setTimeout(function(){
+		assert.equal(spinner.css('display'), 'none');
+		assert.equal(legend.html(), '<div class="small"></div>');
 		assert.equal(firstload.css('display'), 'none');
 		spinner.remove();
 		legend.remove();
