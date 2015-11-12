@@ -10,14 +10,12 @@ html, body, .ui-mobile .ui-page-active, #main {
 	margin: 0;
 	padding: 0;
 }
-html, body, div, span, a, input, input[data-type="search"], li, .leaflet-container, .ui-btn, .ui-page-theme-a .ui-btn, .ui-page-theme-a .ui-btn:visited, .ui-mobile label {
+.ui-page-theme-a {
 	font-size: 14px;
 	font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
-	text-shadow: none !important;
+	text-decoration: none;
+	text-shadow: none;
 	color: black;
-}
-.ui-page-theme-a .ui-btn.ui-btn-active, html .ui-bar-a .ui-btn.ui-btn-active, html .ui-body-a .ui-btn.ui-btn-active, html body .ui-group-theme-a .ui-btn.ui-btn-active, html head+body .ui-btn.ui-btn-a.ui-btn-active, .ui-page-theme-a .ui-checkbox-on:after, html .ui-bar-a .ui-checkbox-on:after, html .ui-body-a .ui-checkbox-on:after, html body .ui-group-theme-a .ui-checkbox-on:after, .ui-btn.ui-checkbox-on.ui-btn-a:after, .ui-page-theme-a .ui-flipswitch-active, html .ui-bar-a .ui-flipswitch-active, html .ui-body-a .ui-flipswitch-active, html body .ui-group-theme-a .ui-flipswitch-active, html body .ui-flipswitch.ui-bar-a.ui-flipswitch-active, .ui-page-theme-a .ui-slider-track .ui-btn-active, html .ui-bar-a .ui-slider-track .ui-btn-active, html .ui-body-a .ui-slider-track .ui-btn-active, html body .ui-group-theme-a .ui-slider-track .ui-btn-active, html body div.ui-slider-track.ui-body-a .ui-btn-active {
-	background-color: #f28523;
 }
 #main {
 	width: 100%;
@@ -111,8 +109,8 @@ div#map-type-input {
 
 /* ========================= begin banner ======================== */
 
-.banner {
-	background-color: black !important;
+.ui-page-theme-a .banner {
+	background-color: black;
 	height: 44px;
 	width: 100%;
 	position: fixed;
@@ -134,16 +132,16 @@ div#map-type-input {
 .nyc {
 	left: 28px;
 }
-.banner h1 {
+.ui-page-theme-a .banner h1 {
 	white-space: nowrap;
 	text-overflow: ellipsis;
 	overflow: hidden;
 	color: white;
-	margin: -4px 0 0 0 !important;
+	margin: -4px 0 0 0;
 	cursor: pointer;
-	font-size: 24px !important;
-	font-weight: bold !important;
-	text-align: left !important;
+	font-size: 24px;
+	font-weight: bold;
+	text-align: left;
 	position: absolute;
 	left: 105px;
 	top: 11px;
@@ -285,8 +283,8 @@ div.chart-title {
 	background-color: rgba(255,255,255,0.5);
 	z-index: 1000;
 }
-#copyright {
-	font-size: 12px !important;
+div#copyright {
+	font-size: 12px;
 	padding: 0 3px;
 }
 
@@ -307,6 +305,9 @@ div.chart-title {
 	content: " ";
 	background-repeat: no-repeat;
 	background-position: center;
+}
+.download-data:hover:after, .download-code:hover:after {
+	background-color: black;
 }
 .download-data:after {
 	background-image: url(../img/data.png);
@@ -408,6 +409,9 @@ div.cartodb-popup.v2 a.cartodb-popup-close-button:after {
 }
 div.cartodb-popup.v2 a.cartodb-popup-close-button:hover:after {
 	background-color: rgba(0,0,0,0.5);
+}
+.ui-icon-carat-d:hover:after, .ui-icon-carat-u:hover:after {
+	background-color: black;
 }
 
 /* ======================== end overrides ======================== */
