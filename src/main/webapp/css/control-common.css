@@ -1,7 +1,7 @@
 .ctl {
 	position: fixed;
 } 
-.ui-page-theme-a .ui-btn.ui-corner-all, .ui-corner-all {
+.ui-page-theme-a a.ui-btn.ui-corner-all, .ui-page-theme-a button.ui-btn.ui-corner-all, .ui-page-theme-a div.ui-controlgroup-controls  {
 	border-radius: .6em;
 }
 .ctl-btn {

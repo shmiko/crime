@@ -10,7 +10,7 @@ html, body, .ui-mobile .ui-page-active, #main {
 	margin: 0;
 	padding: 0;
 }
-.ui-page-theme-a {
+.ui-page-theme-a * {
 	font-size: 14px;
 	font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
 	text-decoration: none;

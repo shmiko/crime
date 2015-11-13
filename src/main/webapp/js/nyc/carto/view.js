@@ -77,7 +77,7 @@ nyc.carto.HeatSymbolizer.prototype = {
 		var css = this.css, idx = this.map.getZoom() - 10;
 		css = this.replace(css, {size: this.sizes[idx] || 1});
 		this.layer.setCartoCSS(css);
-		this.trigger('symbolized');
+		this.trigger('symbolized', css);
 	}
 };
 nyc.inherits(nyc.carto.HeatSymbolizer, nyc.ReplaceTokens);

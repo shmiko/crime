@@ -222,7 +222,7 @@ $(document).ready(function(){
 				'	-torque-animation-duration:10;\n' +
 				'	-torque-time-attribute:"cartodb_id";\n' +
 				'	-torque-aggregation-function:"count(cartodb_id)";\n' +
-				'	-torque-resolution:1;\n' +
+				'	-torque-resolution:2;\n' +
 				'	-torque-data-aggregation:linear;\n' +
 				'}\n' +
 				'#stg_crime_loaction{\n' +
@@ -234,6 +234,7 @@ $(document).ready(function(){
 				'		rgba(166,54,3,0.7)\n' +
 				'	);\n' +
 				'	marker-file:url(https://s3.amazonaws.com/com.cartodb.assets.static/alphamarker.png);\n' +
+				'	marker-fill-opacity:0.4*[value];\n' +
 				'	marker-width:${size};\n' +
 				'}'
 		});
@@ -279,7 +280,8 @@ $(document).ready(function(){
 			new nyc.carto.View({
 				name: 'heat',
 				layer: heatLayer,
-				sqlTemplate: 'SELECT * FROM stg_crime_location WHERE ${where}',
+				sqlTemplate: "SELECT * FROM stg_crime_location WHERE ${where} " +
+					"AND ST_CONTAINS(ST_MAKEENVELOPE(-74.257, 40.496, -73.699, 40.916, 4326), the_geom)",
 				descriptionTemplate: '<b>Concentration of ${displayType}<br>${displayDates}</b>',
 				filters: filters,
 				symbolizer: heatSym,
