@@ -196,9 +196,11 @@ div#map-type-input {
 	background-color: white;
 	height: 320px;
 	overflow-x: auto;
+	overflow-y: hidden;
 	box-shadow: 5px 10px 20px 5px rgba(0,0,0,0.9);
 }
 #chart-all-close {
+	display: none;
 	position: fixed;
 	right: 0;
 	width: 22px;

@@ -179,6 +179,7 @@ nyc.App.prototype = {
 	 */
 	hideAllChart: function(){
 		$('#chart-all').animate({left: $(window).width() + 50});		
+		$('#chart-all-close, #chart-all .chart-title').hide();
 	},
 	/** 
 	 * @export 
@@ -460,6 +461,7 @@ nyc.App.prototype = {
 		this.updatePrecinctChart();
 		if (chart.position().left > 0){
 			chart.animate({left: 0}, $.proxy(this.updatePrecinctChart, this));
+			$('#chart-all-close, #chart-all .chart-title').show();
 		}
 	},
 	/**

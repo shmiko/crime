@@ -41,6 +41,13 @@
 	<script src="//cartodb-libs.global.ssl.fastly.net/cartodb.js/v3/3.15/cartodb.js"></script>
 	<script src="//cdnjs.cloudflare.com/ajax/libs/Chart.js/1.0.2/Chart.min.js"></script>
 	<script src="js/proj4/proj4.js"></script>
+	<!--[if IE <= 9]>
+		<script>
+			Date.prototype.toLocaleDateString = function(){
+				return (this.getMonth() + 1) + '/' + this.getDate() + '/' + this.getFullYear();
+			};
+		</script>
+	<![endif]-->
 </head>
 <body>
 	<table id="first-load">
