@@ -236,7 +236,15 @@ $(document).ready(function(){
 				'	marker-file:url(https://s3.amazonaws.com/com.cartodb.assets.static/alphamarker.png);\n' +
 				'	marker-fill-opacity:0.4*[value];\n' +
 				'	marker-width:${size};\n' +
-				'}'
+				'}\n' +
+				'#stg_crime_loaction[frame-offset=1]{\n' +
+	                'marker-fill-opacity:0.2;\n' +
+	                'marker-width:${sizePlus2};\n' +
+				'}\n' +
+				'#stg_crime_loaction[frame-offset=2]{\n' +
+	                'marker-fill-opacity:0.1;\n' +
+	                'marker-width:${sizePlus4};\n' +
+				'}';				
 		});
 		
 		var locationLeg = new nyc.BinLegend(

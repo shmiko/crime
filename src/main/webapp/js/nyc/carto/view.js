@@ -74,8 +74,10 @@ nyc.carto.HeatSymbolizer = function(options){
 nyc.carto.HeatSymbolizer.prototype = {
 	sizes: [2, 4, 8, 16, 32, 64, 128, 256, 512, 1024, 2048],
 	symbolize: function(){
-		var css = this.css, idx = this.map.getZoom() - 10;
-		css = this.replace(css, {size: this.sizes[idx] || 1});
+		var css = this.css, idx = this.map.getZoom() - 10,
+		size = this.sizes[idx] || 1;
+		css = this.replace(css, {size: size, sizePlus2: size + 2, sizePlus4: size + 4});
+		console.log(css);
 		this.layer.setCartoCSS(css);
 		this.trigger('symbolized', css);
 	}
